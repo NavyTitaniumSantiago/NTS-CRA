@@ -1,0 +1,20 @@
+.border-3{
+    border: 1px solid  rgba(255, 0, 0, 0.6) !important;
+    border-width: 3px !important;
+    border-radius: 0 !important;
+}
+.btn:hover {
+    background-color: rgba(185, 8, 8, 0.781) !important;
+    color: #ebebeb !important;
+}
+.btn{
+    font-weight: bold !important;
+}
+.backButton{
+    position: absolute !important;
+    margin-left: 200px;
+    margin-top: -39px;
+    padding: 5px 9px 5px 9px !important;
+    border-radius: 5px !important;
+    display: inline-block !important;
+}

@@ -1,0 +1,18 @@
+li{
+    color: white;
+}
+.navbar{
+    padding: 0!important;
+}
+.nav-link {
+    padding: 15px 15px !important;
+    width: 100px;
+    float: right;
+}
+.container-fluid{
+    padding-right: 0px !important;
+}
+
+.nav-link:hover {
+    background-color: darkred !important;
+}
