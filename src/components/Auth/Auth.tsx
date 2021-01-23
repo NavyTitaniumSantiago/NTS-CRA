@@ -1,6 +1,7 @@
 import React from 'react'
 import './Auth.css'
-const Auth = props =>{
+
+const Auth: React.FC = props =>{
     return(
         <div>
             Auth

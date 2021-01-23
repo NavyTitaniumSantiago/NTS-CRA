@@ -1,6 +1,6 @@
 import React from 'react'
 import './LiveRoutine.css'
-const LiveRoutine = props =>{
+const LiveRoutine: React.FC  = props =>{
     return(
         <div>
             LiveRoutine

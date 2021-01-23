@@ -1,6 +1,6 @@
 import React from 'react'
 import './Profile.css'
-const Profile = props =>{
+const Profile: React.FC  = props =>{
     return(
         <div>
             Profile

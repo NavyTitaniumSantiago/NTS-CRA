@@ -1,4 +1,4 @@
 import {createMemoryHistory, createBrowserHistory} from 'history'
 
-const history = createBrowserHistory()
+const history: any = createBrowserHistory()
 export default history

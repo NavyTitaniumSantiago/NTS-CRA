@@ -1,6 +1,6 @@
 import React from 'react'
 import './CustomEntry.css'
-const CustomEntry = props =>{
+const CustomEntry: React.FC  = props =>{
     return(
         <div>
             CustomEntry

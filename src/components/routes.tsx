@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import {Auth, SelectionFrame, CustomEntry, ExerciseList, ExerciseInfo, RoutineCustomization, LiveRoutine, Profile} from './indexComponents.js'
-class Routes extends Component{
+class Routes extends React.Component<any>{
     render(){
         return(
             <Switch>   

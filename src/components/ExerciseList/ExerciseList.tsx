@@ -1,6 +1,6 @@
 import React from 'react'
 import './ExerciseList.css'
-const ExerciseList = props =>{
+const ExerciseList: React.FC  = props =>{
     return(
         <div>
             ExerciseList
