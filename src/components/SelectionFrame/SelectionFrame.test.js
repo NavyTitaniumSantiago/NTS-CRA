@@ -1,9 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SelectionFrame from './SelectionFrame';
-import history from '../../history.ts'
 import {render, fireEvent, screen, cleanup} from "@testing-library/react";
 
+describe("Basic Render Test", ()=>{
+    it('renders SelectionFrame without crashing', () => {
+        const div = document.createElement('div');
+        ReactDOM.render(<SelectionFrame />, div);
+        ReactDOM.unmountComponentAtNode(div);
+    });    
+})
 const frameTitles = ["Welcome to the site. Would you like to:", "Create your program:", "What is your fitness goal?", "What is your experience level?"]
 const menuOptions = [ //Second index is the index of target page menu. If idx is -1, means the menu doesnt lead anywhere or is not connected at the moment.
     //That index also reflects the screenTitles index
@@ -28,13 +34,6 @@ const menuDestinationIndexes = {
 }
 const fakeMenuChoice = ["TEXT ENTRY", "beginner", "Select apre approved program", "General FitnessFunctional Fitness"]
 
-describe("Basic Render Test", ()=>{
-    it('renders SelectionFrame without crashing', () => {
-        const div = document.createElement('div');
-        ReactDOM.render(<SelectionFrame />, div);
-        ReactDOM.unmountComponentAtNode(div);
-    });    
-})
 
 describe("Testing Menu Components that are hardcorded", ()=>{
     //Because of the loops in this test the tests declared with "it" always pass.
