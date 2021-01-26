@@ -1,6 +1,8 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import React, {Component} from 'react'
+import React from 'react'
+import {LocalDataProcessor} from '../logicComponents.js'
 import './SelectionFrame.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUndo } from '@fortawesome/free-solid-svg-icons'
@@ -11,6 +13,7 @@ interface IState{
     currentPage: string;
     choices: Array<string>;
     currentLocation: string;
+    routines: Array<string>;
     oldState: {
         choices: Array<string>;
         currentPage: string;
@@ -24,18 +27,22 @@ class SelectionFrame extends React.Component<any, IState> {
             currentPage: "WelcomeScreen",// pageOptions: ["WelcomeScreen", "CustomRoutine", "RoutineFocus", "ExperienceLevel"],
             choices:[],
             currentLocation: 'selectionFrame',
+            routines: [],
             oldState: {
                 choices:[],
                 currentPage: ''
             }
         }
     }
+
     handleClick = (event) =>{
-        
         event.preventDefault()
+        console.log(this.context)
         let nextPage: string = ''
         const innerText = event.target.innerText
         const state = this.state
+        const newState = {...this.state}
+
         if(state.currentPage === "WelcomeScreen"){
             if(innerText==="Select a pre approved program") nextPage = "RoutineFocus"
             else nextPage = "CustomRoutine"
@@ -45,10 +52,13 @@ class SelectionFrame extends React.Component<any, IState> {
         }else if(state.currentPage === "RoutineFocus"){
             nextPage = "ExperienceLevel"
         }else if(state.currentPage === "ExperienceLevel"){
-            //external documents needed
-            //nextPage = "WelcomeScreen"
+            nextPage = "RoutineList"
+            const fetchedRoutines = LocalDataProcessor.getRoutineNameByKeywords([this.state.choices[1], innerText])
+            newState.routines = fetchedRoutines
+        }else{
+            this.context.setRoutine(LocalDataProcessor.getRoutineByRoutineName(innerText))
         }
-        const newState = {...this.state}
+ 
         if(nextPage){
             newState.choices = [...newState.choices, innerText]
             newState.currentPage = nextPage
@@ -58,6 +68,7 @@ class SelectionFrame extends React.Component<any, IState> {
         }
   
     }
+
     getSnapshotBeforeUpdate(prevProps, prevState){
         window.history.pushState(this.state.oldState,"")
         return null
@@ -85,6 +96,10 @@ class SelectionFrame extends React.Component<any, IState> {
             ExperienceLevel:{
                 title: "What is your experience level?",
                 menuOptions:["Beginner", "Intermediate", "Advanced"]
+            },
+            RoutineList: {
+                title: "Please select a routine",
+                menuOptions:this.state.routines
             }
         }
         const state = this.state
