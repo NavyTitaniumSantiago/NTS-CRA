@@ -1,13 +1,10 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
+import { faWindowRestore } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import {LocalDataProcessor} from '../logicComponents.js'
 import './SelectionFrame.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUndo } from '@fortawesome/free-solid-svg-icons'
-import {withRouter} from 'react-router-dom'
-import history from '../../history'
 
 interface IState{
     currentPage: string;
@@ -37,7 +34,6 @@ class SelectionFrame extends React.Component<any, IState> {
 
     handleClick = (event) =>{
         event.preventDefault()
-        console.log(this.context)
         let nextPage: string = ''
         const innerText = event.target.innerText
         const state = this.state
@@ -56,24 +52,31 @@ class SelectionFrame extends React.Component<any, IState> {
             const fetchedRoutines = LocalDataProcessor.getRoutineNameByKeywords([this.state.choices[1], innerText])
             newState.routines = fetchedRoutines
         }else{
-            this.context.setRoutine(LocalDataProcessor.getRoutineByRoutineName(innerText))
+            const currentRoutine = LocalDataProcessor.getRoutineByRoutineName(innerText)
+            this.setState({choices:[...this.state.choices, innerText]})
+            this.props.history.push({pathname: '/routine', state: {currentRoutine}})
         }
  
         if(nextPage){
             newState.choices = [...newState.choices, innerText]
             newState.currentPage = nextPage
             newState.oldState = {...this.state}
-
             this.setState(newState)
         }
   
     }
-
+    componentDidMount(){
+        if(event) this.setState(window.history.state)
+    }
     getSnapshotBeforeUpdate(prevProps, prevState){
-        window.history.pushState(this.state.oldState,"")
+        console.log(12, prevState)
+        if(this.state.currentPage === "RoutineList" && prevState.currentPage !=="RoutineList") window.history.pushState(this.state,"")
+        else window.history.pushState(this.state.oldState,"")
         return null
     }
     componentDidUpdate(event){
+        console.log(56, window.history)
+
         window.onpopstate = () =>{
             if(window.history.state && window.history.state.currentPage) this.setState(window.history.state)
         }
