@@ -66,7 +66,7 @@ class SelectionFrame extends React.Component<any, IState> {
   
     }
     componentDidMount(){
-        if(event) this.setState(window.history.state)
+        if(window.event) this.setState(window.history.state)
     }
     getSnapshotBeforeUpdate(prevProps, prevState){
         console.log(12, prevState)

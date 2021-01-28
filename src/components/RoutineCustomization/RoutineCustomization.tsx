@@ -2,7 +2,7 @@ import React from 'react'
 import './RoutineCustomization.css'
 import {IRoutine} from '../interfaces.js'
 import ButtonGroup from './buttonGroup'
-import { isThisTypeNode } from 'typescript'
+import {CRoutine} from '../functionClasses/routineClasses'
 
 interface IRoutineState{
     currentLocation: string;
@@ -10,7 +10,6 @@ interface IRoutineState{
     currentCycle: number;
     cart: Array<string>,
     editing: boolean,
-    //clickHandler: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 class RoutineCustomization extends React.Component<any, IRoutineState>{
@@ -18,11 +17,15 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
         super(props)
         this.state = {
             currentLocation: 'routineCustomizationFrame',
-            currentRoutine: this.props.history.location.state.currentRoutine,
+            currentRoutine: new CRoutine(),
             currentCycle: 0,
             cart: [],
             editing: false,
-            //clickHandler: this.cycleCycles
+        }
+    }
+    componentDidMount(){
+        if(this.props.history && this.props.history.location && this.props.history.location.state){
+            this.setState({currentRoutine: this.props.history.location.state.currentRoutine})
         }
     }
     handleSetClick = (event) =>{
@@ -48,9 +51,9 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
                 <div className = {cartStyle} id="holdingArea" >
                     <ButtonGroup cart = {this.state.cart} editing={this.state.editing}/>
                 </div>
-                {/* <div className = "row" id="cycleTabs"> */}
+                {this.state.currentRoutine &&
                      <ButtonGroup cycleNum={this.state.currentRoutine["Number of Cycles"]} currentCycle={this.state.currentCycle} onClickHandler={this.cycleCycles}/>
-                {/* </div> */}
+                }
                 <div className = "row" id="routineDisplayArea">
                     {/* <div className = "col col-sm-1">
                         <ButtonGroup  vertical={true} cycleItem={propCycle.Days}/>
