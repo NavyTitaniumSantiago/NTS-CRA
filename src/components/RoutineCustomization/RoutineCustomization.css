@@ -1,10 +1,50 @@
-.btn{
-
+.button-RoutineCustomization{
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.1);
     height: 70px;
     margin: 0 !important;
 }
-
-.dayRow{
+.button-RestDay-RoutineCustomization{
     height: 70px;
+    margin: 0 !important;
+}
+.button-RestDay-RoutineCustomization:hover{
+    background-color: white !important;
+    color: black !important;
+}
+.dayRow{
+    border-bottom: 1px solid rgba(12, 158, 255, 0.2) !important;
+}
+.cycleButton{
+    border-top: 1px solid rgba(12, 158, 255, 0.5) !important;
+    border-right: 1px solid rgba(12, 158, 255, 0.5) !important;
+    border-left: 1px solid rgba(12, 158, 255, 0.5) !important; 
+}
+.cycleButton-Shadow{
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 1) !important;
+}
+.cycleButton-Shadow:hover{
+    background-color:rgb(48, 12, 255)!important;
+}
+.dayButton-RoutineCustomization{
+    background-color:rgba(0, 120, 204, 0.781)!important;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.781)!important;
+    border: 1px solid rgba(0, 0, 0, 0.781)!important;
+    height: 70px;
+    margin: 0 !important;
+}
+.dayButton-RoutineCustomization:hover{
+    background-color:rgb(2, 84, 216)!important;
 }
 
+.cart-On-RoutineCustomization{
+    height: 95px;
+    background-color: rgba(12, 158, 255, 0.2) !important;
+    border: 3px solid rgba(12, 158, 255, 0.5) !important;
+    
+}
+.buttonGroup-instruction-text{
+    padding-top: 6px;
+    color: black;
+    font-weight: bold;
+    text-align: left;
+}

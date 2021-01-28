@@ -108,11 +108,11 @@ class SelectionFrame extends React.Component<any, IState> {
         const state = this.state
         const dataCurrentPage = menu[state.currentPage]
         return (
-            <div className="card m-2 border-3 bg-light">
+            <div className="card m-2 border-primary rounded-0 border-2">
                     <div className="card-body">
                         <h5 className="card-title">{dataCurrentPage.title}</h5>
                         <ul>
-                            {dataCurrentPage.menuOptions.map(option => <li key = {option} className="btn btn-light w-100 mt-2 border-3" onClick = {this.handleClick}>{option}</li>)}    
+                            {dataCurrentPage.menuOptions.map(option => <li key = {option} tabIndex={0} className="btn w-100 mt-2 button-SelectionFrame rounded-0 border-2" onClick = {this.handleClick} onKeyDown = {this.handleClick}>{option}</li>)}    
                         </ul>
                     </div>
             </div>
