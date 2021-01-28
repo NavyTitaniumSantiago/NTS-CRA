@@ -1,0 +1,1 @@
+export {LocalDataProcessor} from './functionClasses/fetchLocalData.ts'

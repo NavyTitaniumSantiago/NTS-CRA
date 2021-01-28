@@ -1,16 +1,16 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import React, {Component} from 'react'
+import { faWindowRestore } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+import {LocalDataProcessor} from '../logicComponents.js'
 import './SelectionFrame.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUndo } from '@fortawesome/free-solid-svg-icons'
-import {withRouter} from 'react-router-dom'
-import history from '../../history'
 
 interface IState{
     currentPage: string;
     choices: Array<string>;
     currentLocation: string;
+    routines: Array<string>;
     oldState: {
         choices: Array<string>;
         currentPage: string;
@@ -24,18 +24,21 @@ class SelectionFrame extends React.Component<any, IState> {
             currentPage: "WelcomeScreen",// pageOptions: ["WelcomeScreen", "CustomRoutine", "RoutineFocus", "ExperienceLevel"],
             choices:[],
             currentLocation: 'selectionFrame',
+            routines: [],
             oldState: {
                 choices:[],
                 currentPage: ''
             }
         }
     }
+
     handleClick = (event) =>{
-        
         event.preventDefault()
         let nextPage: string = ''
         const innerText = event.target.innerText
         const state = this.state
+        const newState = {...this.state}
+
         if(state.currentPage === "WelcomeScreen"){
             if(innerText==="Select a pre approved program") nextPage = "RoutineFocus"
             else nextPage = "CustomRoutine"
@@ -45,24 +48,35 @@ class SelectionFrame extends React.Component<any, IState> {
         }else if(state.currentPage === "RoutineFocus"){
             nextPage = "ExperienceLevel"
         }else if(state.currentPage === "ExperienceLevel"){
-            //external documents needed
-            //nextPage = "WelcomeScreen"
+            nextPage = "RoutineList"
+            const fetchedRoutines = LocalDataProcessor.getRoutineNameByKeywords([this.state.choices[1], innerText])
+            newState.routines = fetchedRoutines
+        }else{
+            const currentRoutine = LocalDataProcessor.getRoutineByRoutineName(innerText)
+            this.setState({choices:[...this.state.choices, innerText]})
+            this.props.history.push({pathname: '/routine', state: {currentRoutine}})
         }
-        const newState = {...this.state}
+ 
         if(nextPage){
             newState.choices = [...newState.choices, innerText]
             newState.currentPage = nextPage
             newState.oldState = {...this.state}
-
             this.setState(newState)
         }
   
     }
+    componentDidMount(){
+        if(event) this.setState(window.history.state)
+    }
     getSnapshotBeforeUpdate(prevProps, prevState){
-        window.history.pushState(this.state.oldState,"")
+        console.log(12, prevState)
+        if(this.state.currentPage === "RoutineList" && prevState.currentPage !=="RoutineList") window.history.pushState(this.state,"")
+        else window.history.pushState(this.state.oldState,"")
         return null
     }
     componentDidUpdate(event){
+        console.log(56, window.history)
+
         window.onpopstate = () =>{
             if(window.history.state && window.history.state.currentPage) this.setState(window.history.state)
         }
@@ -85,16 +99,20 @@ class SelectionFrame extends React.Component<any, IState> {
             ExperienceLevel:{
                 title: "What is your experience level?",
                 menuOptions:["Beginner", "Intermediate", "Advanced"]
+            },
+            RoutineList: {
+                title: "Please select a routine",
+                menuOptions:this.state.routines
             }
         }
         const state = this.state
         const dataCurrentPage = menu[state.currentPage]
         return (
-            <div className="card m-2 border-3 bg-light">
+            <div className="card m-2 border-primary rounded-0 border-2">
                     <div className="card-body">
                         <h5 className="card-title">{dataCurrentPage.title}</h5>
                         <ul>
-                            {dataCurrentPage.menuOptions.map(option => <li key = {option} className="btn btn-light w-100 mt-2 border-3" onClick = {this.handleClick}>{option}</li>)}    
+                            {dataCurrentPage.menuOptions.map(option => <li key = {option} tabIndex={0} className="btn w-100 mt-2 button-SelectionFrame rounded-0 border-2" onClick = {this.handleClick} onKeyDown = {this.handleClick}>{option}</li>)}    
                         </ul>
                     </div>
             </div>

@@ -10,10 +10,10 @@ phases:
       - npm install
   build:
     commands:
-      - npm run test
+      - npm run test-deploy
       - npm run build
 artifacts:
   files:
     - "**/*"
   discard-paths: no
-  base-directory: public
+  base-directory: build
