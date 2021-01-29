@@ -14,7 +14,7 @@ export class LocalDataProcessor {
     }
     static getRoutineByRoutineName(name: string): IRoutine | null{
         let selectedRoutine: IRoutine
-        console.log(typeof routines)
+        //console.log(typeof routines)
         for(let key in routines){
             if(key === name){
                 selectedRoutine = routines[key]
