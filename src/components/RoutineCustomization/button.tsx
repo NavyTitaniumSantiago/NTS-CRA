@@ -10,7 +10,7 @@ interface IButtonProps{
     handleDragging: (event: any, sourceID: Array<number>) => void
 }
 const Button: React.FC<IButtonProps> = props =>{
-    console.log(props)
+    //console.log(props)
     let buttonStyle = "btn button-RoutineCustomization rounded-0 "
     let isDraggable = false;
     let sourceID:Array<number>
