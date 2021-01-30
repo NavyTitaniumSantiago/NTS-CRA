@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react'
 import {IRoutineDay, IRoutineSet} from '../interfaces.js'
 import Button from './button'
+import { v4 as uuidv4 } from 'uuid'
 
 interface IButtonGroupProps{
     singleDayExercises?: Array<IRoutineDay>
@@ -21,7 +22,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     //instructions text for edit area
     const instructionsText = ["-- Drag items here to move them between cycles or drag them directly to a different day.", <br/>,"-- Alternatively you can edit the sets by directly clicking on them.", <br/>, "-- To duplicate a set click on the '+' icon."]
     //default buttonGroupStyle applies to exercise list and edit area
-    let buttonGroupStyle = "btn-group pe-auto float-start btn-grp-routineCustomization" 
+    let buttonGroupStyle = "btn-group pe-auto float-start btn-grp-routineCustomization"
     //buttonElements -> default buttonElements is for exercise list, the secondary is for cycle-tab-navigation
     let buttonElements = props.singleDayExercises;
     let buttonText = ''
@@ -33,7 +34,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     let renderRestDay = false;
     let renderStartButton = false;
     let renderEditingInstructions = false;
-    let singleRow = "col col-sm-10 editDay"
+    let singleRow = "col col-sm-10 sourceDay targetDay"
     /* ---- DECLARING VARIABLES END ----*/
     /* ---- INITIALISING VARIABLES START ---- */
 
@@ -42,9 +43,9 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
 
     switch(props.buttonType){
         case "cartButton":
-            singleRow = "col col-sm-12 editCart pt-2 pb-2"
+            singleRow = "col col-sm-12 targetCart sourceCart pt-2 pb-2"
             buttonElements = props.cart
-            rowClass = "row dayRow me-0 ms-0 editCart"
+            rowClass = "row dayRow me-0 ms-0 targetCart sourceCart"
             renderDOTW = false;
             if(props.cart && !props.cart.length && props.editing) renderEditingInstructions = true;
             break;
@@ -55,6 +56,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
             break;
         case "singleSetButton":
             if(props.singleDayExercises && !props.singleDayExercises.length) renderRestDay = true
+            buttonGroupStyle = `btn-group pe-auto float-start btn-grp-routineCustomization targetDayID ${props.sourceID && props.sourceID[1]}`
             renderStartButton = !renderRestDay
             break;
         default:
@@ -72,7 +74,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
             {/* ----DAY# BUTTON END---- */}
             {/* ----HORIZONTAL LISTS GENERATOR START---- */}
             <div className = {singleRow} onDragOver={(e)=>{e.preventDefault()}} onDragEnter={(e)=>{e.preventDefault()}} onDrop={props.handleDragging}>
-                {(renderRestDay) ? (<div className="fw-bold fs-1">REST DAY</div>):(
+                {(renderRestDay) ? (<div className={`fw-bold fs-1 targetDayID ${props.sourceID && props.sourceID[1]}`}>REST DAY</div>):(
                 <div className={buttonGroupStyle} role="group" aria-label="">
                     {renderEditingInstructions?(<div className="buttonGroup-instruction-text">{instructionsText}</div>):(null)}
                     {buttonElements && buttonElements.map((cyclingEle, idx)=>{
@@ -82,12 +84,12 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
                         // ----EXERCISE LISTS GENERATOR START----
                         if(cyclingEle && cyclingEle.Exercise){
                             buttonText = cyclingEle.Exercise
-                            keyValue = "routineName"+cyclingEle.Exercise+idx
+                            keyValue = uuidv4()+cyclingEle.Exercise+idx
                             sourceID.push(idx)
                         }
                         // ----CYCLE TAB NAVIGATION GENERATOR START---- 
                         else if(props.cycleNum){
-                            keyValue = "routineName"+"cycleNum"+cyclingEle+idx
+                            keyValue = uuidv4()+"cycleNum"+cyclingEle+idx
                             buttonText = "Cycle " + (idx+1)
                         }
                         return <Button handleDragging = {handleDragging} sourceID={sourceID} buttonText = {buttonText} key={keyValue} onClickFunc = {onClickFunc} active={props.currentCycle} editing={props.editing}/>
