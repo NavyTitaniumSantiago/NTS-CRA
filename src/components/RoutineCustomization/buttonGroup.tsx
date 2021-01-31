@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React from 'react'
 import {IRoutineDay, IRoutineSet} from '../interfaces.js'
 import Button from './button'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,7 +12,7 @@ interface IButtonGroupProps{
     currentCycle?: number
     editing?: boolean
     buttonType: string;
-    onClickHandler?: (event: React.MouseEvent<HTMLButtonElement>) => void
+    onClickHandler?: (event: React.MouseEvent<HTMLButtonElement>, sourceID?: Array<number>) => void
     sourceID?: Array<number>
     handleDragging?: (event: any, sourceID?: Array<number>) => void
 }
@@ -20,7 +20,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     /* ---- DECLARING VARIABLES START ----*/
 
     //instructions text for edit area
-    const instructionsText = ["-- Drag items here to move them between cycles or drag them directly to a different day.", <br/>,"-- Alternatively you can edit the sets by directly clicking on them.", <br/>, "-- To duplicate a set click on the '+' icon."]
+    const instructionsText = ["-- Drag items here to move them between cycles or drag them directly to a different day.", <br/>,"-- Alternatively you can edit the sets by directly clicking on them.", <br/>, "-- Ctrl-Click on a set to duplicate"]
     //default buttonGroupStyle applies to exercise list and edit area
     let buttonGroupStyle = "btn-group pe-auto float-start btn-grp-routineCustomization"
     //buttonElements -> default buttonElements is for exercise list, the secondary is for cycle-tab-navigation
@@ -28,7 +28,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     let buttonText = ''
     let rowClass = "row dayRow me-0 ms-2"
     let keyValue = '' //keyvalue is react element key
-    let onClickFunc: (event: React.MouseEvent<HTMLButtonElement>) => void =(event) => event.preventDefault()
+    let onClickFunc: (event: React.MouseEvent<HTMLButtonElement>, sourceID?: Array<number>) => void =(event) => event.preventDefault()
     let handleDragging: (event: any, sourceID?: Array<number>) => void =(event) => event.preventDefault()
     let renderDOTW = true;
     let renderRestDay = false;
@@ -56,7 +56,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
             break;
         case "singleSetButton":
             if(props.singleDayExercises && !props.singleDayExercises.length) renderRestDay = true
-            buttonGroupStyle = `btn-group pe-auto float-start btn-grp-routineCustomization targetDayID ${props.sourceID && props.sourceID[1]}`
+            buttonGroupStyle = `btn-group pe-auto float-start targetDayID ${props.sourceID && props.sourceID[1]}`
             renderStartButton = !renderRestDay
             break;
         default:
@@ -69,7 +69,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     return(
         <div className = {rowClass}>
             {/* ----DAY# BUTTON START---- */}
-            {(renderDOTW)  ? (<div className="col col-sm-1 p-0"><Button handleDragging = {handleDragging} buttonText = {`Day ${props.day}`}/></div>)
+            {(renderDOTW)  ? (<div className="col col-sm-1 p-0"><Button onClickFunc={onClickFunc} handleDragging = {handleDragging} buttonText = {`Day ${props.day}`} editing={props.editing}/></div>)
                 : (null)}
             {/* ----DAY# BUTTON END---- */}
             {/* ----HORIZONTAL LISTS GENERATOR START---- */}
@@ -78,7 +78,6 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
                 <div className={buttonGroupStyle} role="group" aria-label="">
                     {renderEditingInstructions?(<div className="buttonGroup-instruction-text">{instructionsText}</div>):(null)}
                     {buttonElements && buttonElements.map((cyclingEle, idx)=>{
-                        if(props.buttonType === "cartButton") console.log(cyclingEle)
                         let sourceID:Array<number> = []
                         if(props.sourceID) sourceID=[...props.sourceID]
                         // ----EXERCISE LISTS GENERATOR START----
@@ -97,7 +96,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
                 </div>)}
             </div>
             {/* ----HORIZONTAL LISTS GENERATOR END---- */}
-            {(renderStartButton)  ? (<div className="col col-sm-1 p-0"><Button buttonText = {"START"} handleDragging = {handleDragging}/></div>)
+            {(renderStartButton)  ? (<div className="col col-sm-1 p-0"><Button onClickFunc={onClickFunc} buttonText = {"START"} handleDragging = {handleDragging}/></div>)
                 : (null)}
         </div>
     )

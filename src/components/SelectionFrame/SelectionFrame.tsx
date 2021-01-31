@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import { faWindowRestore } from '@fortawesome/free-solid-svg-icons'
+
 import React from 'react'
 import {LocalDataProcessor} from '../logicComponents.js'
 import './SelectionFrame.css'
