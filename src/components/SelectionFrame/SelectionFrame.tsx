@@ -112,7 +112,7 @@ class SelectionFrame extends React.Component<any, IState> {
                     <div className="card-body">
                         <h5 className="card-title">{dataCurrentPage.title}</h5>
                         <ul>
-                            {dataCurrentPage.menuOptions.map(option => <li key = {option} tabIndex={0} className="btn w-100 mt-2 button-SelectionFrame rounded-0 border-2" onClick = {this.handleClick} onKeyDown = {this.handleClick}>{option}</li>)}    
+                            {dataCurrentPage.menuOptions.map(option => <li key = {option} tabIndex={0} className="btn w-100 mt-2 btn-SelectionFrame nts-Btn-blue-hover rounded-0 border-2" onClick = {this.handleClick} onKeyDown = {this.handleClick}>{option}</li>)}    
                         </ul>
                     </div>
             </div>

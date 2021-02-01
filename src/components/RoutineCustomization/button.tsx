@@ -13,7 +13,7 @@ interface IButtonProps{
 }
 const Button: React.FC<IButtonProps> = props =>{
     //console.log(props)
-    let buttonStyle = "btn button-RoutineCustomization rounded-0 "
+    let buttonStyle = "btn button-RoutineCustomization rounded-0 nts-Btn-blue-hover"
     let isDraggable = false;
     let sourceID:Array<number>
     if(props.sourceID) sourceID = props.sourceID
@@ -24,7 +24,7 @@ const Button: React.FC<IButtonProps> = props =>{
         if(parseInt(props.buttonText.split(' ')[1])-1===props.active){
             buttonStyle= "btn btn-primary rounded-0 cycleButton-Shadow"
         }else{
-            buttonStyle = "btn cycleButton rounded-0"
+            buttonStyle = "btn cycleButton rounded-0 nts-Btn-blue-hover"
         }
     }
     return(

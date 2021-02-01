@@ -3,7 +3,7 @@ import {IRoutine} from '../interfaces.js'
 import {CRoutine} from '../functionClasses/routineClasses'
 export class LocalStorageProcessor{
     private storage: any; 
-    private routine: IRoutine;
+    private routine: IRoutine | null;
     private history: any;//specify when schema devised
     private userdata: any;//specify when schema devised
     private storageName: string;

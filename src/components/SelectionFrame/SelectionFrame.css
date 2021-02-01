@@ -1,21 +1,12 @@
-.button-SelectionFrame{
-    /* border: 1px solid  rgba(255, 0, 0, 0.6) !important; */
+.btn-SelectionFrame{
     border: 0.1px solid rgba(0, 0, 0, 0.2) !important;
     border-width: 3px !important;
     border-radius: 0 !important;
-    /* -webkit-box-shadow: 0px 14px 30px 10px rgba(126, 126, 126, 0.4);  */
-    /* box-shadow: 0px 14px 30px 10px rgba(110, 110, 110, 0.4);  */
+    -webkit-box-shadow: 20px 20px 20px rgba(0, 0, 0, 0.1);
     box-shadow: 20px 20px 20px rgba(0, 0, 0, 0.1);
 }
-.btn:hover {
-    background-color: rgba(0, 120, 204, 0.781) !important;
-    color: white !important;
-    
-}
-.btn{
-    font-weight: bold !important;
-}
-.backButton{
+
+.back-Btn-SelectionFrame{
     position: absolute !important;
     margin-left: 200px;
     margin-top: -39px;

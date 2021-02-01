@@ -21,7 +21,7 @@ li{
     padding-right: 0px !important;
 }
 
-.nav-link:hover {
+.nav-link:hover,.nav-link:focus {
     background-color: rgb(2, 84, 216)!important;
 }
 

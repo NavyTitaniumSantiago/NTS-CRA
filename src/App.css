@@ -2,3 +2,11 @@
   text-align: center;
 }
 
+.nts-Btn-blue-hover:hover, .nts-Btn-blue-hover:focus {
+  background-color: rgba(0, 120, 204, 0.781) !important;
+  color: white !important;
+  
+}
+.btn{
+  font-weight: bold !important;
+}
