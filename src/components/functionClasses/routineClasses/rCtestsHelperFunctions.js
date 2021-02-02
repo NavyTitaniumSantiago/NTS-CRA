@@ -48,7 +48,7 @@ export function testCopy(classIn, testObj, whatToChange){
 }
 
 export function checkParentFunctionsExist(classIn){
-    const funcArray = ['replace', 'insert', 'remove', 'duplicate', 'swap']
+    const funcArray = ['replace', 'insert', 'remove', 'duplicate', 'move']
     for(let i = 0; i<funcArray.length; i++){
         expect(typeof classIn[funcArray[i]]).toEqual('function')
     }
@@ -291,13 +291,60 @@ export function testRemove(testTarget, idx){
 export function standaloneRCFduplicate(arrIn, idx){
     if(idx>=arrIn.length) return 0
     else{
-        arrIn.splice(idx, 0, arrIn[idx].copy())
-        return 1
+        arrIn.splice(idx, 0, arrIn[idx])
+        return arrIn
     }
 }
 
-export function standaloneRCFswap(arrIn, idxMoved, idxMovedTo){
-    if(Math.max(idxMoved, idxMovedTo)>=arrIn.length) return 0
+export function testDuplicate(testTarget, idx){
+    //the switch case is duplicated for readibility
+    let controlChoices, conversion, key
+    switch(testTarget){
+        case "Day":
+            controlChoices = [emptyDay, len1Day, len3Day]
+            conversion = CRoutineDay
+            key="Sets"
+            break;
+        case "Cycle":
+            controlChoices = [emptyCycle, len1Cycle, len5Cycle]
+            conversion = CRoutineCycle
+            key = "Days"
+            break;
+        case "Routine":
+            controlChoices = [emptyRoutine, len1Routine, len4Routine]
+            conversion = CRoutine
+            key = "Cycles"
+            break;
+        default:
+            break;
+    }
+    const testChoices = []
+    controlChoices.forEach(choice=> testChoices.push(new conversion(choice)))
+    //duplicate from empty array
+    expect(testChoices[0].duplicate(0)).toEqual(0)
+    //duplicate when idx>length
+    expect(testChoices[1].duplicate(1)).toEqual(0)
+    expect(testChoices[1][key].length).toEqual(controlChoices[1][key].length)
+    //duplicate at start
+    expect(testChoices[1].duplicate(0)).toEqual(1)
+    expect(testChoices[1][key].length).toEqual(2)
+    expect(testChoices[1][key][0]).toMatchObject(testChoices[1][key][1])
+    //duplicate in the middle
+    expect(testChoices[2].duplicate(1)).toEqual(1)
+    expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length+1)
+    expect(testChoices[2][key][1]).toMatchObject(testChoices[2][key][2])
+    //duplicate in the end
+    testChoices[2] = new conversion(controlChoices[2])
+    const lastIdx = controlChoices[2][key].length-1
+    expect(testChoices[2].duplicate(lastIdx)).toEqual(1)
+    expect(testChoices[2][key].length).toEqual(lastIdx+2)
+    expect(testChoices[2][key][lastIdx]).toMatchObject(testChoices[2][key][lastIdx+1])
+}
+
+
+export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo){
+    if(Math.max(idxMoved, idxMovedTo)>=arrIn.length || arrIn.length === 1) return 0
+    else if(idxMoved===idxMovedTo) return arrIn
     else{
         const temp = arrIn[idxMoved]
         if(Math.abs(idxMoved-idxMovedTo)===1){
@@ -305,11 +352,42 @@ export function standaloneRCFswap(arrIn, idxMoved, idxMovedTo){
             arrIn[idxMovedTo] = temp
         }
         else{
-            this.insert(idxMovedTo, temp)
-            if(idxMovedTo<idxMoved) this.remove(idxMoved+1)
-            else this.remove(idxMoved)
+            if(idxMoved<idxMovedTo){
+                standaloneRCFinsert(arrIn, idxMovedTo+1, temp)
+                //console.log(arrIn)
+                standaloneRCFremove(arrIn, idxMoved)
+            }else if(idxMovedTo<idxMoved){
+                standaloneRCFinsert(arrIn, idxMovedTo-1, temp)
+                //console.log(arrIn)
+                standaloneRCFremove(arrIn, idxMoved+1)
+            } 
         }
-        return 0
+        return arrIn
     }
 }
 
+export function testMove(testTarget, idxMove, idxMoveTo){
+        //ILLEGAL MOVES
+        //move on empty array -> shouldnt work
+        //move when idxMove>length -> shouldnt work
+        //move when idxMoveTo>length -> shouldnt work
+        //move from arr.len = 1 -> shouldnt work
+        //SEQUENTIAL MOVES
+        //move at start
+ 
+        //move in the end
+
+        //move in the middle
+
+        //GAP MOVES
+        //move at start
+            //idxMove>idxMovedTo
+            //idxMove<idxMovedTo
+        //move in the end
+            //idxMove>idxMovedTo
+            //idxMove<idxMovedTo
+        //move in the middle
+            //idxMove>idxMovedTo
+            //idxMove<idxMovedTo
+            
+}

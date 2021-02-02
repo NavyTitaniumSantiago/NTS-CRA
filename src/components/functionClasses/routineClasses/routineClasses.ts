@@ -84,7 +84,7 @@ class RoutineCommonFunctions{
         }
     }
 
-    swap(idxMoved: number, idxMovedTo: number): number{
+    move(idxMoved: number, idxMovedTo: number): number{
         if(Math.max(idxMoved, idxMovedTo)>=this.iterable.length) return 0
         else{
             const temp = this.iterable[idxMoved]
@@ -103,8 +103,8 @@ class RoutineCommonFunctions{
     
     copy () : any {
         const iterableCopy: Array<CRoutineSet | CRoutineDay | CRoutineCycle > =[]
-        this.iterable.forEach(set=>{
-            iterableCopy.push(set.copy())
+        this.iterable.forEach(item=>{
+            iterableCopy.push(item.copy())
         })
         return {...this,
             iterable: iterableCopy
