@@ -10,6 +10,8 @@ export interface IRoutineSet{
     customWeight: number,
     defaultRepCD: number,
     customRepCD: number,
+    defaultSetCD: number, 
+    customSetCD: number,
     defaultReps: number,
     customReps: number,
     defaultIncreaseStrategy: IincreaseStrategy,

@@ -1,6 +1,3 @@
-import  {IincreaseStrategy, IRoutineSet, IRoutineDay, IRoutineCycle, IRoutine} from './interfacesFunctionClasses'
-
-
 export class CincreaseStrategy{ 
     increaseWhen: number = 0
     increaseBy: number = 0;
@@ -19,6 +16,8 @@ export class CRoutineSet{
     Exercise: string = '';
     defaultWeight: number = 0;
     customWeight: number = 0;
+    defaultSetCD: number = 0;
+    customSetCD: number = 0;
     defaultRepCD: number = 0;
     customRepCD: number = 0;
     defaultReps: number = 0;
@@ -34,6 +33,8 @@ export class CRoutineSet{
             this.customRepCD = values.customRepCD
             this.defaultReps = values.defaultReps
             this.customReps = values.customReps
+            this.defaultSetCD = values.defaultSetCD
+            this.customSetCD = values.customSetCD
             this.defaultIncreaseStrategy = new CincreaseStrategy(values.defaultIncreaseStrategy)
             this.customIncreaseStrategy = new CincreaseStrategy(values.customIncreaseStrategy)
         }
@@ -45,23 +46,26 @@ export class CRoutineSet{
         }
     }
 }
+
+
 class RoutineCommonFunctions{
     protected iterable: Array<CRoutineSet|CRoutineDay|CRoutineCycle> = []
-    
-    replace (idx: number, arrayIn: CRoutineSet | CRoutineDay | CRoutineCycle){
+    //protected length: number = 0
+    replace (idx: number, objectIn: CRoutineSet | CRoutineDay | CRoutineCycle){
         if(idx>=this.iterable.length){
-            this.iterable.push(arrayIn.copy())
+            this.iterable.push(objectIn.copy())
         }
         else{
-            this.iterable[idx] = arrayIn.copy()
+            this.iterable[idx] = objectIn.copy()
         }
     }
 
-    insert (idx: number, arrayIn: CRoutineSet | CRoutineDay | CRoutineCycle){
-        if(idx>=this.iterable.length) this.iterable.push(arrayIn.copy())
+    insert (idx: number, objectIn: CRoutineSet | CRoutineDay | CRoutineCycle){
+        if(idx>=this.iterable.length) this.iterable.push(objectIn.copy())
         else{
-            this.iterable.splice(idx, 0, arrayIn.copy())
+            this.iterable.splice(idx, 0, objectIn.copy())
         }
+       // this.length++
     }
 
     remove (idx: number): number{
@@ -79,6 +83,7 @@ class RoutineCommonFunctions{
             return 1
         }
     }
+
     swap(idxMoved: number, idxMovedTo: number): number{
         if(Math.max(idxMoved, idxMovedTo)>=this.iterable.length) return 0
         else{
@@ -88,15 +93,28 @@ class RoutineCommonFunctions{
                 this.iterable[idxMovedTo] = temp
             }
             else{
-                this.insert(idxMovedTo, this.iterable[idxMoved])
+                this.insert(idxMovedTo, temp)
+                if(idxMovedTo<idxMoved) this.remove(idxMoved+1)
+                else this.remove(idxMoved)
             }
             return 0
         }
     }
+    
+    copy () : any {
+        const iterableCopy: Array<CRoutineSet | CRoutineDay | CRoutineCycle > =[]
+        this.iterable.forEach(set=>{
+            iterableCopy.push(set.copy())
+        })
+        return {...this,
+            iterable: iterableCopy
+        }
+    }
 }
+
 export class CRoutineDay extends RoutineCommonFunctions{
     "Number of Sets": number = 0;
-    "Is rest day": boolean = false;
+    "Is rest day": boolean = true;
     "Sets": Array<CRoutineSet> = [new CRoutineSet()]
     constructor(values?: CRoutineDay){
         super()
@@ -104,51 +122,38 @@ export class CRoutineDay extends RoutineCommonFunctions{
             this["Number of Sets"] = values["Number of Sets"]
             this["Is rest day"] = values["Is rest day"]
             this["Sets"] = []
-            for(let i = 0; i< values["Sets"].length; i++){
-                this["Sets"].push(values["Sets"][i].copy())
+            if(values.Sets){ //If a rest day is instantiated it will have no Sets attached.
+                for(let i = 0; i< values["Sets"].length; i++){
+                    this["Sets"].push(new CRoutineSet(values["Sets"][i])) //the inputs will mostly be JSONs
+                }
             }
         }
         this.iterable = this.Sets
-    }
-
-    copy () : CRoutineDay{
-        const newSets: Array<CRoutineSet> =[]
-        this.Sets.forEach(set=>{
-            newSets.push(set.copy())
-        })
-        return {...this,
-            Sets: newSets
-        }
+        //this.length = this.iterable.length
     }
 }
 export class CRoutineCycle extends RoutineCommonFunctions{
-    "Length": number = 0;
+    "Length": number = 0
     "Days": Array<CRoutineDay> = [new CRoutineDay()]
     constructor(values?: CRoutineCycle){
         super()
         if(values){
             this.Length = values.Length
             this.Days = []
-            for(let i = 0; i< values.Days.length; i++){
-                this.Days.push(values.Days[i].copy())
+            if(values.Days){
+                for(let i = 0; i< values.Days.length; i++){
+                    this.Days.push(new CRoutineDay(values.Days[i]))
+                }
             }
         }
         this.iterable = this.Days
-    }
-    copy(){
-        const newDays: Array<CRoutineDay> =[]
-        this.Days.forEach(day=>{
-            newDays.push(day.copy())
-        })
-        return {...this,
-            Sets: newDays
-        }
+        //this.length = this.iterable.length
     }
 }
 export class CRoutine extends RoutineCommonFunctions{
     "Difficulty Level": string = '';
     "Focus": string = '';
-    "Total Length": number = 0;
+    "Total Length": number = 0; // this really needs to be cleaned up we're not using a lot of it
     "Number of Cycles": number = 0;
     "Cycles": Array<CRoutineCycle> = [new CRoutineCycle()]
     constructor(values?: CRoutine){
@@ -159,20 +164,15 @@ export class CRoutine extends RoutineCommonFunctions{
             this["Total Length"] = values["Total Length"]
             this["Number of Cycles"] = values["Number of Cycles"]
             this["Cycles"] = []
-            for(let i = 0; i< values["Cycles"].length; i++){
-                this["Cycles"].push(values["Cycles"][i].copy())
+            if(values.Cycles){
+                for(let i = 0; i< values["Cycles"].length; i++){
+                    this["Cycles"].push(new CRoutineCycle(values["Cycles"][i]))
+                }
             }
         }
         this.iterable = this.Cycles
-    }
-    copy(){
-        const newCycles: Array<CRoutineCycle> =[]
-        this.Cycles.forEach(cycle=>{
-            newCycles.push(cycle.copy())
-        })
-        return {...this,
-            Sets: newCycles
-        }
+       // this.length = this.iterable.length
+        //this["Number of Cycles"] = this.length
     }
 }
 
