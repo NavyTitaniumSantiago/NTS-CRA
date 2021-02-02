@@ -1,199 +1,20 @@
-import {LocalDataProcessor} from './fetchLocalData'
-import {IincreaseStrategy, IRoutineSet, IRoutineDay, IRoutineCycle, IRoutine} from './interfacesFunctionClasses'
-import {CincreaseStrategy, CRoutineSet, CRoutineDay, CRoutineCycle, CRoutine} from './routineClasses'
 import {EmptySet, EmptyDay, EmptyCycle, EmptyRoutine, 
     ActuallyEmptyDay, ActuallyEmptyCycle, ActuallyEmptyRoutine} from './routineClassesTestData'
-const TestRoutine = LocalDataProcessor.getRoutineByRoutineName("Ceonxiy")
+import {CincreaseStrategy, CRoutineSet, CRoutineDay, CRoutineCycle, CRoutine} from './routineClasses'
+import {Ceonxiy, CycleLenOne, RoutineLenOne} from './rCtestRoutineData.js'
+const TestRoutine = Ceonxiy
 
-describe("TestRoutine loads correctly", ()=>{
-    it("loads", ()=>{
-        expect(TestRoutine).not.toBeNull()
-        }
-    )
-    it("Has all appropriate attributes", ()=>{
-        expect(TestRoutine["Difficulty Level"]).toEqual("Advanced")
-        expect(TestRoutine["Focus"]).toEqual("Weightloss")
-        expect(TestRoutine["Total Length"]).toEqual(12)
-        expect(TestRoutine["Number of Cycles"]).toEqual(4)
-        expect(TestRoutine["Cycles"].length).toEqual(4)
-    })
-})
 const TestIncStrat = TestRoutine.Cycles[0].Days[0].Sets[0].defaultIncreaseStrategy
 const TestSet = TestRoutine.Cycles[0].Days[0].Sets[0]
 const TestDay = TestRoutine.Cycles[1].Days[0]
 const TestCycle = TestRoutine.Cycles[0]
 
-describe("Sub-objects load correctly", ()=>{
-    it("TestIncStrat", ()=>{
-        expect(TestIncStrat).not.toBeNull()
-        expect(TestIncStrat.increaseWhen).toEqual(30)
-    })
-    it("TestSet", ()=>{
-        expect(TestSet).not.toBeNull()
-        expect(TestSet.Exercise).toEqual("Lower Crunch")
-    })
-    it("TestDay", ()=>{
-        expect(TestDay).not.toBeNull()
-        expect(TestDay["Is rest day"]).toEqual(false)
-    })
-    it("TestCycle", ()=>{
-        expect(TestCycle).not.toBeNull()
-        expect(TestCycle.Length).toEqual(5)
-    })
-})
-
-//  expect().toEqual()
-describe("Empty CincreaseStrategy is created appropriately", ()=>{
-    let CincStrat
-    beforeAll(()=>{
-        CincStrat = new CincreaseStrategy()
-    })
-    it("instantiates", ()=>{
-        expect(CincStrat).not.toBeNull()
-    })
-    it("has default values", ()=>{
-       incStratDefault(CincStrat, 0, 0)
-    })
-})
-
-describe("NonEmpty CincreaseStrategy is created appropriately", ()=>{
-    
-    let CincStrat = new CincreaseStrategy(TestIncStrat)
-
-    it("instantiates", ()=>{
-        expect(CincStrat).not.toBeNull()
-    })
-    it("has default values", ()=>{
-        incStratDefault(CincStrat, TestIncStrat.increaseBy, TestIncStrat.increaseWhen)
-    })
-    it("deepcopies", ()=>{
-        incStratCopy(CincStrat, TestIncStrat.increaseBy, TestIncStrat.increaseWhen)
-    })
-})
-
-describe("CRoutineSet works", ()=>{
-    it("CRoutineSet works with default values", ()=>{
-        testDefault(CRoutineSet, EmptySet)
-    })
-    it("CRoutineSet works with custom values", ()=>
-    {
-        testCustom(CRoutineSet, TestSet)
-    })
-    it("CRoutineSet deepcopies", ()=>{
-        testCopy(CRoutineSet, TestSet, "defaultWeight")
-    })
-})
-
-describe("CRoutineDay works", ()=>{
-    it("CRoutineDay works with default values", ()=>{
-        testDefault(CRoutineDay, EmptyDay)
-    })
-    it("CRoutineDay works with custom values", ()=>
-    {
-        testCustom(CRoutineDay, TestDay)
-    })
-    it("CRoutineDay deepcopies", ()=>{
-        testCopy(CRoutineDay, TestDay, "Number of Sets")
-    })
-})
-
-describe("CRoutineCycle works", ()=>{
-    it("CRoutineCycle works with default values", ()=>{
-        testDefault(CRoutineCycle, EmptyCycle)
-    })
-    it("CRoutineCycle works with custom values", ()=>
-    {
-        testCustom(CRoutineCycle, TestCycle)
-    })
-    it("CRoutineCycle deepcopies", ()=>{
-        testCopy(CRoutineCycle, TestCycle, "Length")
-    })
-})
-
-describe("CRoutine works", ()=>{
-    it("CRoutine works with default values", ()=>{
-        testDefault(CRoutine, EmptyRoutine)
-    })
-    it("CRoutine works with custom values", ()=>
-    {
-        testCustom(CRoutine, TestRoutine)
-    })
-    it("CRoutine deepcopies", ()=>{
-        testCopy(CRoutine, TestRoutine, "Number of Cycles")
-    })
-})
-describe("RoutineCommonFunction passed down functions", () =>{
-    it("Exist on Day", () => {
-        checkParentFunctionsExist(new CRoutineDay(TestDay))
-    })
-    it("Exist on Cycle", () => {
-        checkParentFunctionsExist(new CRoutineCycle(TestCycle))
-    })
-    it("Exist on Routine", () => {
-        checkParentFunctionsExist(new CRoutine(TestRoutine))
-    })
-})
-//test these functions detached too
-describe("RoutineCommonFunction replace", ()=>{
-    it("Works logically, decoupled from classes", ()=>{
-        const arrsIn = [[1,2,3], [], [1],]
-        const arrsOut = [[1, 15, 3], [15], [15]]
-        expect(standaloneRCFreplace(arrsIn[0], 1, 15)).toEqual(arrsOut[0])
-        expect(standaloneRCFreplace(arrsIn[1], 0, 15)).toEqual(arrsOut[1])
-        expect(standaloneRCFreplace(arrsIn[2], 0, 15)).toEqual(arrsOut[2])
-    })
-    it("Works on Day", ()=>{
-        testReplace("Day", 1)
-    })
-    it("Works on Cycle", ()=>{
-        testReplace("Cycle", 0)
-    })
-    it("Works on Routine", ()=>{
-        testReplace("Routine", 0)
-    })
-    it("Works on Empty Day", ()=>{
-        testReplaceEmpty("Day", 0, true)
-    })
-    it("Works on Empty Cycle", ()=>{
-        testReplaceEmpty("Cycle", 0, true)
-    })
-    it("Works on Empty Routine", ()=>{
-        testReplaceEmpty("Routine", 0, true)
-    })
-})
-describe("RoutineCommonFunction insert", ()=>{
-    it("Works logically, decoupled from classes", ()=>{
-        const arrsIn = [[], [1],[1, 2, 3], [1, 2, 3], [1, 2, 3, 4]]
-        const arrsOut = [[15], [1, 15], [15, 1, 2, 3], [1, 15, 2, 3], [1, 2, 3, 15, 4]]
-        //insert into empty array
-        expect(standaloneRCFinsert(arrsIn[0], 0, 15)).toEqual(arrsOut[0]) 
-        //insert when idx>length
-        expect(standaloneRCFinsert(arrsIn[1], 15, 15)).toEqual(arrsOut[1])
-        //insert at start
-        expect(standaloneRCFinsert(arrsIn[2], 0, 15)).toEqual(arrsOut[2])
-        //insert in the middle
-        expect(standaloneRCFinsert(arrsIn[3], 1, 15)).toEqual(arrsOut[3])
-        //insert in the end
-        expect(standaloneRCFinsert(arrsIn[4], 3, 15)).toEqual(arrsOut[4])
-    })
-    it("Works on Day", ()=>{
-         testInsert("Day")
-    })
-    it("Works on Cycle", ()=>{
-        testInsert("Cycle")
-    })
-    it("Works on Routine", ()=>{
-        testInsert("Routine")
-    })
-
-})
-
-function incStratDefault(objIn, valOne, valTwo){
+export function incStratDefault(objIn, valOne, valTwo){
     expect(objIn.increaseBy).toEqual(valOne)
     expect(objIn.increaseWhen).toEqual(valTwo)
 }
 
-function incStratCopy(objIn, valOne, valTwo){
+export function incStratCopy(objIn, valOne, valTwo){
         const CincStratCopy = objIn.copy()
         const updTwo = valTwo+1
         expect(CincStratCopy.increaseBy).toEqual(valOne)
@@ -203,20 +24,20 @@ function incStratCopy(objIn, valOne, valTwo){
         expect(CincStratCopy.increaseWhen).toEqual(valTwo)
 }
 
-function testDefault(classIn, testObj){
+export function testDefault(classIn, testObj){
     //console.log(testObj)
     const Ctest = new classIn()
     expect(Ctest).not.toBeNull()
     expect(Ctest).toMatchObject(testObj)
 
 }
-function testCustom(classIn, testObj){
+export function testCustom(classIn, testObj){
     const Ctest = new classIn(testObj)
     expect(Ctest).not.toBeNull()
     expect(Ctest).toMatchObject(testObj)
 }
 
-function testCopy(classIn, testObj, whatToChange){
+export function testCopy(classIn, testObj, whatToChange){
     const Ctest = new classIn(testObj)
     expect(Ctest).not.toBeNull()
     const CtestCopy = Ctest.copy()
@@ -226,14 +47,14 @@ function testCopy(classIn, testObj, whatToChange){
     expect(Ctest[whatToChange]).toEqual(Ctest[whatToChange])
 }
 
-function checkParentFunctionsExist(classIn){
+export function checkParentFunctionsExist(classIn){
     const funcArray = ['replace', 'insert', 'remove', 'duplicate', 'swap']
     for(let i = 0; i<funcArray.length; i++){
         expect(typeof classIn[funcArray[i]]).toEqual('function')
     }
 }
 
-function standaloneRCFreplace (arrIn, idx, valIn){
+export function standaloneRCFreplace (arrIn, idx, valIn){
     if(idx>=arrIn.length){
         arrIn.push(valIn)
     }
@@ -243,11 +64,7 @@ function standaloneRCFreplace (arrIn, idx, valIn){
     return arrIn
 }
 
-function testReplace(testTarget, idx){
-    // iterables are:
-    //     "CRoutineDay": "Sets",
-    //     "CRoutineCycle": "Days",
-    //     "CRoutine": "Cycles"
+export function testReplace(testTarget, idx){
     let key, nonemptyJSON, CRoutineInstance, emptyJSON, conversion, sanityCheck
     switch(testTarget){
         case "Day":
@@ -287,7 +104,7 @@ function testReplace(testTarget, idx){
     expect(CRoutineInstance[key][idx][sanityCheck[0]]).not.toEqual(1337)
 }
 
-function testReplaceEmpty(testTarget, idx){
+export function testReplaceEmpty(testTarget, idx){
     let key, nonemptyJSON, CRoutineInstance, emptyJSON, conversion, sanityCheck
     switch(testTarget){
         case "Day":
@@ -327,7 +144,7 @@ function testReplaceEmpty(testTarget, idx){
     expect(CRoutineInstance[key][idx][sanityCheck[0]]).not.toEqual(1337)
 }
 
-function standaloneRCFinsert (arrIn, idx, valIn){
+export function standaloneRCFinsert (arrIn, idx, valIn){
     if(idx>=arrIn.length) arrIn.push(valIn)
     else{
         arrIn.splice(idx, 0, valIn)
@@ -335,7 +152,7 @@ function standaloneRCFinsert (arrIn, idx, valIn){
         return arrIn
 }
 
-function testInsert(CRoutineType){
+export function testInsert(CRoutineType){
     let testJSON, CRoutineInstance, key, conversion, itemToInsert
     switch(CRoutineType){
         case "Day":
@@ -401,15 +218,77 @@ function testInsert(CRoutineType){
     expect(CRoutineInstance[key][1].tV1).toBeUndefined()
 }
         
-function standaloneRCFremove (arrIn, idx){
+export function standaloneRCFremove (arrIn, idx){
     if(idx>=arrIn) return 0
     else{
-        arrIn(idx, 1)
-        return 1
+        arrIn.splice(idx, 1)
+        return arrIn
     }
 }
 
-function standaloneRCFduplicate(arrIn, idx){
+//I found it difficult to keep track of the what is going on with the nesting so i 
+//broke it down into more obvious variables. Code above should probably be changes
+//to fit that pattern eventually.
+
+const emptyDay = TestRoutine.Cycles[0].Days[1]
+const len1Day = TestRoutine.Cycles[0].Days[0]
+const len3Day = TestRoutine.Cycles[0].Days[3]
+const emptyCycle = ActuallyEmptyCycle
+const len1Cycle = CycleLenOne
+const len5Cycle = TestRoutine.Cycles[0]
+const emptyRoutine = ActuallyEmptyRoutine
+const len1Routine = RoutineLenOne
+const len4Routine = TestRoutine
+
+export function testRemove(testTarget, idx){
+    let controlChoices, conversion, key
+    switch(testTarget){
+        case "Day":
+            controlChoices = [emptyDay, len1Day, len3Day]
+            conversion = CRoutineDay
+            key="Sets"
+            break;
+        case "Cycle":
+            controlChoices = [emptyCycle, len1Cycle, len5Cycle]
+            conversion = CRoutineCycle
+            key = "Days"
+            break;
+        case "Routine":
+            controlChoices = [emptyRoutine, len1Routine, len4Routine]
+            conversion = CRoutine
+            key = "Cycles"
+            break;
+        default:
+            break;
+    }
+    const testChoices = []
+    controlChoices.forEach(choice=> testChoices.push(new conversion(choice)))
+    //remove from empty array
+    expect(testChoices[0].remove(0)).toEqual(0)
+    //remove when idx>length
+    expect(testChoices[1].remove(1)).toEqual(0)
+    expect(testChoices[1]).toMatchObject(controlChoices[1])
+    //remove from arr.len = 1
+    expect(testChoices[1].remove(0)).toEqual(1)
+    expect(testChoices[1][key].length).toEqual(0)
+    //remove at start
+    expect(testChoices[2].remove(0)).toEqual(1)
+    expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
+    expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==0))
+    //remove in the middle
+    testChoices[2] = new conversion(controlChoices[2])
+    expect(testChoices[2].remove(1)).toEqual(1)
+    expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
+    expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==1))
+    //remove in the end
+    testChoices[2] = new conversion(controlChoices[2])
+    const lastIdx = testChoices[2][key].length-1
+    expect(testChoices[2].remove(lastIdx)).toEqual(1)
+    expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
+    expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==lastIdx))
+}
+
+export function standaloneRCFduplicate(arrIn, idx){
     if(idx>=arrIn.length) return 0
     else{
         arrIn.splice(idx, 0, arrIn[idx].copy())
@@ -417,7 +296,7 @@ function standaloneRCFduplicate(arrIn, idx){
     }
 }
 
-function standaloneRCFswap(arrIn, idxMoved, idxMovedTo){
+export function standaloneRCFswap(arrIn, idxMoved, idxMovedTo){
     if(Math.max(idxMoved, idxMovedTo)>=arrIn.length) return 0
     else{
         const temp = arrIn[idxMoved]
@@ -433,3 +312,4 @@ function standaloneRCFswap(arrIn, idxMoved, idxMovedTo){
         return 0
     }
 }
+
