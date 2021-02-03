@@ -1,6 +1,6 @@
 
 import {IRoutine} from '../interfaces.js'
-import {CRoutine} from '../functionClasses/routineClasses'
+import {CRoutine} from './routineClasses/routineClasses'
 export class LocalStorageProcessor{
     private storage: any; 
     private routine: IRoutine | null;
