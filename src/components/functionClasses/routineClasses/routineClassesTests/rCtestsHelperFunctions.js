@@ -460,7 +460,6 @@ export function testMove_Sequential(testTarget){
 export function testMove_GAP_START(testTarget){
     const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
     let testChoice = new conversion(controlChoice)
-    //console.log(testChoice[key][0], controlChoice[key][0])
     //Before
         //idxMove<idxMovedTo
         expect(testChoice.move(0,3)).toEqual(1)
@@ -499,13 +498,112 @@ export function testMove_GAP_START(testTarget){
 export function testMove_GAP_END(testTarget){
     const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
     let testChoice = new conversion(controlChoice)
+    //Before
+        //idxMove<idxMovedTo
+        expect(testChoice.move(2,4)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(4,2)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][4])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][3])
+    //After
+        //idxMove<idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(2,4, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][4])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][2])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(4,2, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][4])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][3])
 }
 
 export function testMove_GAP_MIDDLE(testTarget){
     const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
     let testChoice = new conversion(controlChoice)
+    //Before
+        //idxMove<idxMovedTo
+        expect(testChoice.move(1,3)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(3,1)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+    //After
+        //idxMove<idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(1,3, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(3,1, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
 }
 export function testMove_GAP_START_END(testTarget){
     const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
     let testChoice = new conversion(controlChoice)
+        //Before
+        //idxMove<idxMovedTo
+        expect(testChoice.move(0,4)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(4,0)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][4])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][3])
+    //After
+        //idxMove<idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(0,4, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][4])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][0])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(4,0, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][4])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][3])
 }

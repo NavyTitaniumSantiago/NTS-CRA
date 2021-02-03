@@ -93,7 +93,6 @@ class RoutineCommonFunctions{
             || this.iterable.length===1 ||
             idxMoved === idxMovedTo) return 0
         else{
-            //console.log("start", this.iterable)
             const temp = this.iterable[idxMoved]
             if(Math.abs(idxMoved-idxMovedTo)===1){
                 this.iterable[idxMoved] = this.iterable[idxMovedTo]
@@ -105,9 +104,6 @@ class RoutineCommonFunctions{
                 if(idxMoved<idxMovedTo) this.remove(idxMoved)
                 else this.remove(idxMoved+1)
             }
-           // console.log("end", this.iterable)
-           //console.log("iterable one", this.iterable[0])
-           //console.log("iterable two", this.iterable[2])
             return 1
         }
     }
