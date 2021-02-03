@@ -50,22 +50,26 @@ export class CRoutineSet{
 
 class RoutineCommonFunctions{
     protected iterable: Array<CRoutineSet|CRoutineDay|CRoutineCycle> = []
+    protected arrDataTypeCaster: any = CRoutineSet
+    protected copier: any = CRoutineSet
     //protected length: number = 0
     replace (idx: number, objectIn: CRoutineSet | CRoutineDay | CRoutineCycle){
         if(idx>=this.iterable.length){
-            this.iterable.push(objectIn.copy())
+            this.iterable.push(new this.arrDataTypeCaster(objectIn))
         }
         else{
-            this.iterable[idx] = objectIn.copy()
+            this.iterable[idx] = new this.arrDataTypeCaster(objectIn)
         }
+        return 1
     }
 
     insert (idx: number, objectIn: CRoutineSet | CRoutineDay | CRoutineCycle){
-        if(idx>=this.iterable.length) this.iterable.push(objectIn.copy())
+        if(idx>=this.iterable.length) this.iterable.push(new this.arrDataTypeCaster(objectIn))
         else{
-            this.iterable.splice(idx, 0, objectIn.copy())
+            this.iterable.splice(idx, 0, new this.arrDataTypeCaster(objectIn))
         }
        // this.length++
+       return 1
     }
 
     remove (idx: number): number{
@@ -79,29 +83,40 @@ class RoutineCommonFunctions{
     duplicate(idx: number): number{
         if(idx>=this.iterable.length) return 0
         else{
-            this.iterable.splice(idx, 0, this.iterable[idx].copy())
+            this.iterable.splice(idx, 0, new this.arrDataTypeCaster(this.iterable[idx]))
             return 1
         }
     }
 
-    move(idxMoved: number, idxMovedTo: number): number{
-        if(Math.max(idxMoved, idxMovedTo)>=this.iterable.length) return 0
+    move(idxMoved: number, idxMovedTo: number, beforeOrAfter: string): number{
+        if(Math.max(idxMoved, idxMovedTo)>=this.iterable.length 
+            || this.iterable.length===1 ||
+            idxMoved === idxMovedTo) return 0
         else{
+            //console.log("start", this.iterable)
             const temp = this.iterable[idxMoved]
             if(Math.abs(idxMoved-idxMovedTo)===1){
                 this.iterable[idxMoved] = this.iterable[idxMovedTo]
                 this.iterable[idxMovedTo] = temp
             }
             else{
+                if(beforeOrAfter === "after") idxMovedTo++
                 this.insert(idxMovedTo, temp)
-                if(idxMovedTo<idxMoved) this.remove(idxMoved+1)
-                else this.remove(idxMoved)
+                if(idxMoved<idxMovedTo) this.remove(idxMoved)
+                else this.remove(idxMoved+1)
             }
-            return 0
+           // console.log("end", this.iterable)
+           //console.log("iterable one", this.iterable[0])
+           //console.log("iterable two", this.iterable[2])
+            return 1
         }
     }
     
     copy () : any {
+        return new this.copier(this)
+    }
+
+    objectify () : any {
         const iterableCopy: Array<CRoutineSet | CRoutineDay | CRoutineCycle > =[]
         this.iterable.forEach(item=>{
             iterableCopy.push(item.copy())
@@ -109,13 +124,20 @@ class RoutineCommonFunctions{
         return {...this,
             iterable: iterableCopy
         }
-    }
+    }        
 }
 
 export class CRoutineDay extends RoutineCommonFunctions{
     "Number of Sets": number = 0;
     "Is rest day": boolean = true;
     "Sets": Array<CRoutineSet> = [new CRoutineSet()]
+    insertSet = this.insert
+    removeSet = this.remove
+    moveSet = this.move
+    duplicateSet = this.duplicate
+    replaceSet = this.replace
+    protected arrDataTypeCaster = CRoutineSet
+    protected copier = CRoutineDay
     constructor(values?: CRoutineDay){
         super()
         if(values){
@@ -135,6 +157,13 @@ export class CRoutineDay extends RoutineCommonFunctions{
 export class CRoutineCycle extends RoutineCommonFunctions{
     "Length": number = 0
     "Days": Array<CRoutineDay> = [new CRoutineDay()]
+    insertDay = this.insert
+    removeDay = this.remove
+    moveDay = this.move
+    duplicateDay = this.duplicate
+    replaceDay = this.replace
+    protected arrDataTypeCaster = CRoutineDay
+    protected copier = CRoutineCycle
     constructor(values?: CRoutineCycle){
         super()
         if(values){
@@ -156,6 +185,13 @@ export class CRoutine extends RoutineCommonFunctions{
     "Total Length": number = 0; // this really needs to be cleaned up we're not using a lot of it
     "Number of Cycles": number = 0;
     "Cycles": Array<CRoutineCycle> = [new CRoutineCycle()]
+    insertCycle = this.insert
+    removeCycle = this.remove
+    moveCycle = this.move
+    duplicateCycle = this.duplicate
+    replaceCycle = this.replace
+    protected arrDataTypeCaster = CRoutineCycle
+    protected copier = CRoutine
     constructor(values?: CRoutine){
         super()
         if(values){

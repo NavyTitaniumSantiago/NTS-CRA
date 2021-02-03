@@ -1,6 +1,6 @@
 import {EmptySet, EmptyDay, EmptyCycle, EmptyRoutine, 
     ActuallyEmptyDay, ActuallyEmptyCycle, ActuallyEmptyRoutine} from './routineClassesTestData'
-import {CincreaseStrategy, CRoutineSet, CRoutineDay, CRoutineCycle, CRoutine} from './routineClasses'
+import {CincreaseStrategy, CRoutineSet, CRoutineDay, CRoutineCycle, CRoutine} from '../routineClasses'
 import {Ceonxiy, CycleLenOne, RoutineLenOne} from './rCtestRoutineData.js'
 const TestRoutine = Ceonxiy
 
@@ -153,24 +153,27 @@ export function standaloneRCFinsert (arrIn, idx, valIn){
 }
 
 export function testInsert(CRoutineType){
-    let testJSON, CRoutineInstance, key, conversion, itemToInsert
+    let testJSON, CRoutineInstance, key, conversion, itemToInsert, insertKey
     switch(CRoutineType){
         case "Day":
             testJSON = ActuallyEmptyDay
             CRoutineInstance = new CRoutineDay(testJSON)
             key = "Sets"
+            insertKey = "defaultWeight"
             conversion = CRoutineSet
             break;
         case "Cycle":
             testJSON = ActuallyEmptyCycle
             CRoutineInstance = new CRoutineCycle(testJSON)
             key = "Days"
+            insertKey = "Number of Sets"
             conversion = CRoutineDay
             break;
         case "Routine":
             testJSON = ActuallyEmptyRoutine
             CRoutineInstance = new CRoutine(testJSON)
             key = "Cycles"
+            insertKey = "Length"
             conversion = CRoutineCycle
             break;
         default: 
@@ -186,36 +189,36 @@ export function testInsert(CRoutineType){
     //[null]
     //test idx>len
     itemToInsert = new conversion(testJSON)
-    itemToInsert["tV1"] = 1337
+    itemToInsert[insertKey] = 1337
     CRoutineInstance.insert(2, itemToInsert)
     expect(CRoutineInstance[key].length).toEqual(2)
-    expect(CRoutineInstance[key][0].tV1).toBeUndefined()
-    expect(CRoutineInstance[key][1].tV1).toEqual(1337)
+    expect(CRoutineInstance[key][0][insertKey]).toBeUndefined()
+    expect(CRoutineInstance[key][1][insertKey]).toEqual(1337)
      //[null, 1337]
     //test start
     itemToInsert = new conversion(testJSON)
-    itemToInsert["tV1"] = 42
+    itemToInsert[insertKey] = 42
     CRoutineInstance.insert(0, itemToInsert)
     expect(CRoutineInstance[key].length).toEqual(3)
-    expect(CRoutineInstance[key][1].tV1).toBeUndefined()
-    expect(CRoutineInstance[key][0].tV1).toEqual(42)
+    expect(CRoutineInstance[key][1][insertKey]).toBeUndefined()
+    expect(CRoutineInstance[key][0][insertKey]).toEqual(42)
     //[42, null, 1337]
     //test end
     itemToInsert = new conversion(testJSON)
-    itemToInsert["tV1"] = 44
+    itemToInsert[insertKey] = 44
     CRoutineInstance.insert(2, itemToInsert)
     expect(CRoutineInstance[key].length).toEqual(4)
-    expect(CRoutineInstance[key][3].tV1).toEqual(1337)
-    expect(CRoutineInstance[key][2].tV1).toEqual(44)
+    expect(CRoutineInstance[key][3][insertKey]).toEqual(1337)
+    expect(CRoutineInstance[key][2][insertKey]).toEqual(44)
     //[42, null, 44, 1337]
     //test middle
     itemToInsert = new conversion(testJSON)
-    itemToInsert["tV1"] = 77
+    itemToInsert[insertKey] = 77
     CRoutineInstance.insert(2, itemToInsert)
     expect(CRoutineInstance[key].length).toEqual(5)
-    expect(CRoutineInstance[key][3].tV1).toEqual(44)
-    expect(CRoutineInstance[key][2].tV1).toEqual(77)
-    expect(CRoutineInstance[key][1].tV1).toBeUndefined()
+    expect(CRoutineInstance[key][3][insertKey]).toEqual(44)
+    expect(CRoutineInstance[key][2][insertKey]).toEqual(77)
+    expect(CRoutineInstance[key][1][insertKey]).toBeUndefined()
 }
         
 export function standaloneRCFremove (arrIn, idx){
@@ -230,15 +233,15 @@ export function standaloneRCFremove (arrIn, idx){
 //broke it down into more obvious variables. Code above should probably be changes
 //to fit that pattern eventually.
 
-const emptyDay = TestRoutine.Cycles[0].Days[1]
-const len1Day = TestRoutine.Cycles[0].Days[0]
-const len3Day = TestRoutine.Cycles[0].Days[3]
-const emptyCycle = ActuallyEmptyCycle
-const len1Cycle = CycleLenOne
-const len5Cycle = TestRoutine.Cycles[0]
-const emptyRoutine = ActuallyEmptyRoutine
-const len1Routine = RoutineLenOne
-const len4Routine = TestRoutine
+const emptyDay = new CRoutineDay(TestRoutine.Cycles[0].Days[1])
+const len1Day = new CRoutineDay(TestRoutine.Cycles[0].Days[0])
+const len3Day = new CRoutineDay(TestRoutine.Cycles[0].Days[3])
+const emptyCycle = new CRoutineCycle(ActuallyEmptyCycle)
+const len1Cycle = new CRoutineCycle(CycleLenOne)
+const len5Cycle = new CRoutineCycle(TestRoutine.Cycles[0])
+const emptyRoutine = new CRoutine(ActuallyEmptyRoutine)
+const len1Routine = new CRoutine(RoutineLenOne)
+const len4Routine = new CRoutine(TestRoutine)
 
 export function testRemove(testTarget, idx){
     let controlChoices, conversion, key
@@ -297,7 +300,7 @@ export function standaloneRCFduplicate(arrIn, idx){
 }
 
 export function testDuplicate(testTarget, idx){
-    //the switch case is duplicated for readibility
+    //the switch cases are duplicated for readibility
     let controlChoices, conversion, key
     switch(testTarget){
         case "Day":
@@ -342,7 +345,7 @@ export function testDuplicate(testTarget, idx){
 }
 
 
-export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo){
+export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo, beforeOrAfter = "before"){
     if(Math.max(idxMoved, idxMovedTo)>=arrIn.length || arrIn.length === 1) return 0
     else if(idxMoved===idxMovedTo) return arrIn
     else{
@@ -352,13 +355,11 @@ export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo){
             arrIn[idxMovedTo] = temp
         }
         else{
+            if(beforeOrAfter === "after") idxMovedTo++
+            standaloneRCFinsert(arrIn, idxMovedTo, temp)
             if(idxMoved<idxMovedTo){
-                standaloneRCFinsert(arrIn, idxMovedTo+1, temp)
-                //console.log(arrIn)
                 standaloneRCFremove(arrIn, idxMoved)
             }else if(idxMovedTo<idxMoved){
-                standaloneRCFinsert(arrIn, idxMovedTo-1, temp)
-                //console.log(arrIn)
                 standaloneRCFremove(arrIn, idxMoved+1)
             } 
         }
@@ -366,28 +367,145 @@ export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo){
     }
 }
 
-export function testMove(testTarget, idxMove, idxMoveTo){
+export function testMove_Illegal(testTarget){
+        //the switch cases are duplicated for readibility
+        let controlChoices, conversion, key
+        switch(testTarget){
+            case "Day":
+                controlChoices = [emptyDay, len1Day, len3Day]
+                conversion = CRoutineDay
+                key="Sets"
+                break;
+            case "Cycle":
+                controlChoices = [emptyCycle, len1Cycle, len5Cycle]
+                conversion = CRoutineCycle
+                key = "Days"
+                break;
+            case "Routine":
+                controlChoices = [emptyRoutine, len1Routine, len4Routine]
+                conversion = CRoutine
+                key = "Cycles"
+                break;
+            default:
+                break;
+        }
+        const testChoices = []
+        controlChoices.forEach(choice=> testChoices.push(new conversion(choice)))
         //ILLEGAL MOVES
         //move on empty array -> shouldnt work
-        //move when idxMove>length -> shouldnt work
-        //move when idxMoveTo>length -> shouldnt work
+        expect(testChoices[0].move(1,2)).toEqual(0)
         //move from arr.len = 1 -> shouldnt work
-        //SEQUENTIAL MOVES
-        //move at start
- 
-        //move in the end
+        expect(testChoices[1].move(0, 0)).toEqual(0)
+        //move when idxMove>length -> shouldnt work
+        expect(testChoices[2].move(15,1)).toEqual(0)
+        //move when idxMoveTo>length -> shouldnt work
+        expect(testChoices[2].move(15,1)).toEqual(0)
+        //move when both idx> length
+        expect(testChoices[2].move(15,15)).toEqual(0)
+}
 
-        //move in the middle
+function testMoveSwitch(testTarget){
+    let controlChoice, conversion, key
+    switch(testTarget){//all arrays on empty and 1 len are done in testMove_illegal
+        case "Day":
+            len3Day.insert(TestSet, 5)
+            len3Day.insert(TestSet, 5)
+            controlChoice = len3Day
+            conversion = CRoutineDay
+            key="Sets"
+            break;
+        case "Cycle":
+            controlChoice = len5Cycle
+            conversion = CRoutineCycle
+            key = "Days"
+            break;
+        case "Routine":
+            len4Routine.insert(TestCycle, 5)
+            controlChoice = len4Routine
+            conversion = CRoutine
+            key = "Cycles"
+            break;
+        default:
+            break;
+    }
+    return {controlChoice, conversion, key}
+}
 
-        //GAP MOVES
-        //move at start
-            //idxMove>idxMovedTo
-            //idxMove<idxMovedTo
-        //move in the end
-            //idxMove>idxMovedTo
-            //idxMove<idxMovedTo
-        //move in the middle
-            //idxMove>idxMovedTo
-            //idxMove<idxMovedTo
-            
+export function testMove_Sequential(testTarget){
+    const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
+    let testChoice = new conversion(controlChoice)
+    //SEQUENTIAL MOVES
+    //the mechanism for sequential moves it the same so with standalone testing working properly
+    //it feels excessive to test it here as well.
+    //move at start
+    expect(testChoice.move(0,1)).toEqual(1)
+    expect(testChoice[key][0]).toEqual(controlChoice[key][1])
+    expect(testChoice[key][1]).toEqual(controlChoice[key][0])
+    //move in the end
+    testChoice = new conversion(controlChoice)
+    expect(testChoice.move(3,4)).toEqual(1)
+    expect(testChoice[key][3]).toEqual(controlChoice[key][4])
+    expect(testChoice[key][4]).toEqual(controlChoice[key][3])
+    //move in the middle
+    testChoice = new conversion(controlChoice)
+    expect(testChoice.move(2,3)).toEqual(1)
+    expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+    expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+}
+
+//originially i wanted to write functions to removed the redundancy in the following 
+//but reducing repetition increases complexity
+//and who tests the testmen
+
+export function testMove_GAP_START(testTarget){
+    const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
+    let testChoice = new conversion(controlChoice)
+    //console.log(testChoice[key][0], controlChoice[key][0])
+    //Before
+        //idxMove<idxMovedTo
+        expect(testChoice.move(0,3)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(3,0)).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+    //After
+        //idxMove<idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(0,3, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+        //idxMove>idxMovedTo
+        testChoice = new conversion(controlChoice)
+        expect(testChoice.move(3,0, "after")).toEqual(1)
+        expect(testChoice[key][0]).toEqual(controlChoice[key][0])
+        expect(testChoice[key][1]).toEqual(controlChoice[key][3])
+        expect(testChoice[key][2]).toEqual(controlChoice[key][1])
+        expect(testChoice[key][3]).toEqual(controlChoice[key][2])
+        expect(testChoice[key][4]).toEqual(controlChoice[key][4])
+}
+
+export function testMove_GAP_END(testTarget){
+    const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
+    let testChoice = new conversion(controlChoice)
+}
+
+export function testMove_GAP_MIDDLE(testTarget){
+    const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
+    let testChoice = new conversion(controlChoice)
+}
+export function testMove_GAP_START_END(testTarget){
+    const {controlChoice, conversion, key} = testMoveSwitch(testTarget)
+    let testChoice = new conversion(controlChoice)
 }
