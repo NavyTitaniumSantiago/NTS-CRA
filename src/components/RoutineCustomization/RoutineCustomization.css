@@ -1,15 +1,20 @@
 .button-RoutineCustomization{
     box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.1);
+    min-height: 70px;
+    margin: 0 !important;
+    display: block; 
+}
+/* .button-RestDay-RoutineCustomization{
     height: 70px;
     margin: 0 !important;
-}
-.button-RestDay-RoutineCustomization{
-    height: 70px;
-    margin: 0 !important;
-}
+} */
+/* doesnt seem like its needed but well see
 .button-RestDay-RoutineCustomization:hover{
     background-color: white !important;
     color: black !important;
+} */
+.slideDown{
+    animation: slideFromTop 400ms linear;
 }
 .dayRow{
     border-bottom: 1px solid rgba(12, 158, 255, 0.2) !important;
@@ -17,12 +22,22 @@
 .cycleButton{
     border-top: 1px solid rgba(12, 158, 255, 0.5) !important;
     border-right: 1px solid rgba(12, 158, 255, 0.5) !important;
-    border-left: 1px solid rgba(12, 158, 255, 0.5) !important; 
+    border-left: 1px solid rgba(12, 158, 255, 0.5) !important;
+   
+}
+.cancel_finalizeButton-RoutineCustomization{
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 1) !important;
+    border: 1px solid black !important;    
+}
+.cancel_finalizeButton-RoutineCustomization:hover, .cancel_finalizeButton-RoutineCustomization:focus{
+    background-color:rgb(255, 0, 43)!important;
+    color: white!important;
 }
 .cycleButton-Shadow{
     box-shadow: 2px 2px 1px rgba(0, 0, 0, 1) !important;
+
 }
-.cycleButton-Shadow:hover{
+.cycleButton-Shadow:hover,.cycleButton-Shadow:focus{
     background-color:rgb(48, 12, 255)!important;
 }
 .dayButton-RoutineCustomization{
@@ -32,19 +47,32 @@
     height: 70px;
     margin: 0 !important;
 }
-.dayButton-RoutineCustomization:hover{
+.dayButton-RoutineCustomization:hover,.dayButton-RoutineCustomization:focus{
     background-color:rgb(2, 84, 216)!important;
 }
 
 .cart-On-RoutineCustomization{
-    height: 95px;
+    min-height: 95px;
     background-color: rgba(12, 158, 255, 0.2) !important;
     border: 3px solid rgba(12, 158, 255, 0.5) !important;
-    
+    overflow: auto !important;
+    font-size: 18px !important;
 }
 .buttonGroup-instruction-text{
     padding-top: 6px;
     color: black;
     font-weight: bold;
     text-align: left;
+}
+.sourceDay{
+    overflow: auto!important;
+}
+
+@keyframes slideFromTop{
+    from{
+        transform: translateY(-25%)
+    }
+    to{
+        transform: translateY(0%)
+    }
 }
