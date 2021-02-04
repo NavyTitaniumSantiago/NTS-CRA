@@ -20,7 +20,10 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     /* ---- DECLARING VARIABLES START ----*/
 
     //instructions text for edit area
-    const instructionsText = ["-- Drag items here to move them between cycles or drag them directly to a different day.", <br/>,"-- Alternatively you can edit the sets by directly clicking on them.", <br/>, "-- Ctrl-Click on a set to duplicate"]
+    const instructionsText = ["-- Drag items here to move them between cycles or drag them directly to a different day.", 
+    <br/>,"-- Alternatively you can edit the sets by directly clicking on them.", 
+    <br/>, "-- Ctrl-Click on a Set/Day/Cycle to duplicate",
+    <br/>, "-- Alt-Click on a Set/Day/Cycle to delete"]
     //default buttonGroupStyle applies to exercise list and edit area
     let buttonGroupStyle = "btn-group pe-auto float-start btn-grp-routineCustomization"
     //buttonElements -> default buttonElements is for exercise list, the secondary is for cycle-tab-navigation
@@ -89,9 +92,14 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
                         // ----CYCLE TAB NAVIGATION GENERATOR START---- 
                         else if(props.cycleNum){
                             keyValue = uuidv4()+"cycleNum"+cyclingEle+idx
-                            buttonText = "Cycle " + (idx+1)
+                            if(idx === props.cycleNum-1) buttonText = "Cycle +"
+                            else buttonText = "Cycle " + (idx+1)
                         }
-                        return <Button handleDragging = {handleDragging} sourceID={sourceID} buttonText = {buttonText} key={keyValue} onClickFunc = {onClickFunc} active={props.currentCycle} editing={props.editing}/>
+                        return <Button handleDragging = {handleDragging} 
+                        sourceID={sourceID} 
+                        buttonText = {buttonText} 
+                        key={keyValue} onClickFunc = {onClickFunc} 
+                        active={props.currentCycle} editing={props.editing}/>
                     })}
                 </div>)}
             </div>

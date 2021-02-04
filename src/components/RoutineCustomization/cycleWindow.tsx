@@ -1,6 +1,7 @@
 import React from 'react'
 import {IRoutineDay, IRoutineSet} from '../interfaces.js'
 import ButtonGroup from './buttonGroup'
+import Button from './button'
 import { v4 as uuidv4 } from 'uuid'
 import {CRoutineCycle} from '../functionClasses/routineClasses/routineClasses'
 
@@ -27,6 +28,16 @@ const CycleWindow: React.FC<ICycleWindowProps> = props =>{
                     key = {props.currentCycle+idx+uuidv4()}/>}) 
                 }
         </div>
+        {/* <div className = "row ps-4">
+            <div className = "col col-sm-1 p-0">
+            <Button
+                    buttonText={"Day +"} sourceID={[props.currentCycle, -2]} 
+                    handleDragging = {props.handleDragging} 
+                    onClickFunc={props.handleSetClick} 
+                    editing={props.editing} 
+                    key = {props.currentCycle+uuidv4()}/>
+            </div>
+        </div> */}
     </div>
     )
 }

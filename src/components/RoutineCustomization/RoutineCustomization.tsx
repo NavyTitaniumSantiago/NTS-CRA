@@ -3,11 +3,8 @@ import './RoutineCustomization.css'
 import {IRoutine, IRoutineDay, IRoutineSet, IRoutineCycle} from '../interfaces.js'
 import ButtonGroup from './buttonGroup'
 import {CRoutine, CRoutineCycle, CRoutineSet, CRoutineDay} from '../functionClasses/routineClasses/routineClasses'
-import { v4 as uuidv4 } from 'uuid'
 import {LocalStorageProcessor} from '../functionClasses/localStorage'
-import {a} from '../functionClasses/editRoutineClasses'
 import CycleWindow from './cycleWindow'
-import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
 
 interface IRoutineState{
     currentLocation: string;
@@ -33,41 +30,63 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
     //passThroughCycle critical layout: [].Sets[]
     passThroughCycle: CRoutineCycle = new CRoutineCycle() // to edit directly with class methods
     //editedRoutine critical layout: [].Days[].Sets[] & [].Length(typescript checks will fail if .Length is ommited)
-    editedRoutine:Array<IRoutineCycle> = []
+    editedRoutine: CRoutine = new CRoutine()
     
     componentDidMount(){
         if(this.props.history && this.props.history.location && this.props.history.location.state){
             this.passThroughCycle = new CRoutineCycle(this.props.history.location.state.currentRoutine.Cycles[this.state.currentCycle])
             this.setState({currentRoutine: this.props.history.location.state.currentRoutine})
-            this.editedRoutine = JSON.parse(JSON.stringify(this.props.history.location.state.currentRoutine.Cycles))
+            this.editedRoutine = new CRoutine(this.props.history.location.state.currentRoutine)
         }
         
     }
     handleSetClick = (event, sourceID?: Array<number>) : void=>{
         event.preventDefault()
-        const copyDay = event.target.innerText && event.target.innerText.includes("Day ") && event.ctrlKey && this.state.editing
-        const copySet = this.state.editing && event.ctrlKey
-        if(copyDay){
-            const copyIdx = parseInt(event.target.innerText.split(' ')[1])-1
-            this.passThroughCycle.duplicate(copyIdx)
-        }
-        else if(copySet && sourceID){
-            if(event.target.parentNode.classList.contains("targetDayID")){
-                //const copiedSet:CRoutineSet = JSON.parse(JSON.stringify(this.passThroughCycle[sourceID[1]].Sets[sourceID[2]]))  
-                this.passThroughCycle.Days[sourceID[1]].duplicate(sourceID[2])    
-            }else{
-               console.log(this.state.cart)
-               const copiedSet:IRoutineSet = JSON.parse(JSON.stringify(this.state.cart[sourceID[2]]))
-               this.setState({cart:[...this.state.cart, copiedSet]})
+        if(!this.state.editing) return
+        const targetIsDay = event.target.innerText && event.target.innerText.includes("Day ")
+        if(event.ctrlKey){
+            if(targetIsDay){
+                const copyIdx = parseInt(event.target.innerText.split(' ')[1])-1
+                this.passThroughCycle.duplicate(copyIdx)
             }
+            else if(sourceID){
+                if(event.target.parentNode.classList.contains("targetDayID")){
+                    this.passThroughCycle.Days[sourceID[1]].duplicate(sourceID[2])    
+                }else{
+                const copiedSet:IRoutineSet = JSON.parse(JSON.stringify(this.state.cart[sourceID[2]]))
+                this.setState({cart:[...this.state.cart, copiedSet]})
+                }
+            }
+            this.setState({}) 
+            this.editedRoutine.Cycles[this.state.currentCycle] = this.passThroughCycle.copy()
+        }else if(event.altKey){
+            if(targetIsDay){
+                const delIdx = parseInt(event.target.innerText.split(' ')[1])-1
+                this.passThroughCycle.remove(delIdx)
+            }
+            else if(sourceID){
+                if(event.target.parentNode.classList.contains("targetDayID")){
+                    this.passThroughCycle.Days[sourceID[1]].remove(sourceID[2])
+                }else{
+                    const newCartWithMethods = new CRoutineDay()
+                    newCartWithMethods.setSets(this.state.cart)
+                    newCartWithMethods.remove(sourceID[2])
+                    this.setState({cart:newCartWithMethods.Sets})
+                }
+            }
+            
+            if(this.passThroughCycle.Days.length === 0){
+                this.editedRoutine.removeCycle(this.state.currentCycle)
+            }else{
+                this.editedRoutine.Cycles[this.state.currentCycle] = this.passThroughCycle.copy()
+            }
+            this.setState({})
         }
-        this.setState({}) 
-        this.editedRoutine[this.state.currentCycle] = this.passThroughCycle.copy()
-
     }
+
     handleDragging = (event:any, sourceID?:Array<number>) : void =>{
         event.stopPropagation()
-
+        const target = event.target
         let newCart = [...this.state.cart]
         /* ---- ACQUIRE DATA FROM ELEMENT THAT IS BEING DRAGGED START ---- */
         if(event.type==="dragstart"){
@@ -79,7 +98,11 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
             //sourceID = event.target.innerText.split(' ')[1]
             //event.dataTransfer.setData("id", sourceID) 
 
-            event.dataTransfer.setData("id", sourceID) 
+            event.dataTransfer.setData("id", sourceID)
+            if(event.target.classList.contains("cycleButton")|| //inactive tab
+            event.target.classList.contains("cycleButton-Shadow")){ //selected tab
+                event.dataTransfer.setData("cycleId", target.innerText.split(' ')[1]-1)
+            } 
 
         /* ---- ACQUIRE DATA FROM ELEMENT THAT IS BEING DRAGGED START ---- */
         /* ---- PROCESS DROP OFF START ---- */
@@ -87,11 +110,11 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
             
             const id: Array<number> = []
             event.dataTransfer.getData("id").split(',').forEach(stringNum => id.push(parseInt(stringNum)))
-
             let dragTargetIsCart: boolean = false;
             let dragTargetIsDayRow: boolean = false;
+            let dragTargetIsCycle: boolean = false;
             let targetButtonMidPoint = 0
-            const target = event.target
+            const cycleId = event.dataTransfer.getData("cycleId")
             let moveTo: number = 99
             
             //gets the location of the target element
@@ -113,8 +136,12 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
                 { 
                    dragTargetIsCart = true; 
                 }
+            else if(target.classList.contains("cycleButton"))
+                {
+                    dragTargetIsCycle = true;
+                }
 
-            if(dragTargetIsCart)
+            if(dragTargetIsCart && !cycleId)
             {   let targetValue: IRoutineSet | Array<IRoutineSet>
                 if(id[0] === -1){ // dragging within cart
                     if(!target.classList.contains("targetCart")){//dragging on top of an exercise button
@@ -128,7 +155,7 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
                             }
                         }
                     }
-                    else{moveTo = newCart.length-1} //dragging to an emtpy space in the cart
+                    else {moveTo = newCart.length-1} //dragging to an emtpy space in the cart
                     const newCartWithMethods = new CRoutineDay()
                     newCartWithMethods.setSets(newCart)
                     newCartWithMethods.move(id[2], moveTo, targetButtonMidPoint, event.pageX)
@@ -137,9 +164,14 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
                 }
                 else if(id.length === 2){ //dragging a whole day to cart
                     targetValue = []
-                    const sourceDay = id[0]
+                    const sourceDay = id[1]
                     this.passThroughCycle.Days[sourceDay].Sets.forEach((set:IRoutineSet) => targetValue.push(set))
                     this.passThroughCycle.remove(sourceDay)
+
+                    if(!this.passThroughCycle.Days.length){
+                        this.editedRoutine.removeCycle(this.state.currentCycle)
+                        this.setState({currentCycle: 0})
+                    }
                     newCart=[...newCart, ...targetValue]
                 }else{ //dragging a single set to cart
                     targetValue = this.passThroughCycle.Days[id[1]].Sets[id[2]]
@@ -213,37 +245,90 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
                         this.passThroughCycle.Days[targetDayID].insert(moveTo, draggedObject, targetButtonMidPoint, event.pageX)
                     }
                 }
-   
+
+            }else if(dragTargetIsCycle){
+                targetButtonMidPoint = x+width/2
+                let moveFrom = cycleId
+                let moveTo = parseInt(target.innerText.split(' ')[1])-1
+                //Dragging a cycle                               
+                //reordering cycle indexing
+                let currentCycle = this.state.currentCycle
+                if(moveFrom){
+                    this.editedRoutine.move(moveFrom, moveTo, targetButtonMidPoint, event.pageX)
+                    this.setState({currentCycle: moveTo})
+                }else if(id && id.length === 2){//Dragging a day
+                     //inserting a day into CycleDestination
+                     this.editedRoutine.Cycles[moveTo].insert(99, this.editedRoutine.Cycles[currentCycle].Days[id[1]])
+                    //removing a day from CycleOrigin
+                    this.passThroughCycle.removeDay(id[1])
+                    //purging CycleOrigin if CycleOrigin.len = 0
+                    if(!this.passThroughCycle.Days.length){
+                        this.editedRoutine.removeCycle(currentCycle)
+                        this.passThroughCycle = new CRoutineCycle(this.editedRoutine.Cycles[0])
+                    }else{
+                        this.editedRoutine.Cycles[currentCycle].removeDay(id[1])
+                    }
+                    this.setState({currentCycle: currentCycle})
+                }    
             }
             
             /* ---- PROCESS DROP OFF END ---- */
-            
-            this.editedRoutine[this.state.currentCycle] = this.passThroughCycle.copy()
-
-            this.setState({cart:newCart})
+            if(!dragTargetIsCycle){
+                if(this.passThroughCycle.Days.length) this.editedRoutine.Cycles[this.state.currentCycle] = this.passThroughCycle.copy()
+                else if(this.editedRoutine.Cycles.length) this.passThroughCycle = new CRoutineCycle(this.editedRoutine.Cycles[0])
+                this.setState({cart:newCart})
+            }
         }
     }
     cycleCycles = (event) => {
         event.preventDefault()
-        const currentCycle = parseInt(event.target.innerText.split(' ')[1])-1
-        this.setState({currentCycle:currentCycle})
-        this.passThroughCycle = new CRoutineCycle(this.editedRoutine[currentCycle])
+        let currentCycle = event.target.innerText.split(' ')[1]
+        const clickToDuplicate = event.ctrlKey && event.target.innerText && event.target.innerText.match(/Cycle \d/)
+        const clickToDelete = event.altKey && event.target.innerText && event.target.innerText.match(/Cycle \d/) 
+        if(clickToDuplicate || clickToDelete){
+            let targetCycle=parseInt(currentCycle)-1
+        if(clickToDelete){
+            this.editedRoutine.removeCycle(targetCycle)
+            }
+        else if(clickToDuplicate){
+            this.editedRoutine.duplicateCycle(targetCycle)
+            }
+        this.setState({})
+        }
+        else{
+            let newCycle: CRoutineCycle
+            if(currentCycle === "+" && this.state.editing){
+                newCycle = new CRoutineCycle()
+                newCycle.Days[0]["Is rest day"] = true
+                newCycle.Days[0].Sets = []
+                this.editedRoutine.insert(99, newCycle)
+                const newTabIdx = this.editedRoutine.Cycles.length-1
+                this.passThroughCycle = new CRoutineCycle(this.editedRoutine.Cycles[newTabIdx])
+                this.setState({currentCycle: newTabIdx})
+            }else if(currentCycle!=="+"){
+                currentCycle = parseInt(currentCycle)-1
+                this.passThroughCycle = new CRoutineCycle(this.editedRoutine.Cycles[currentCycle])
+                this.setState({currentCycle:currentCycle})
+            }
+        }
     }
 
     toggleEdit = (event) =>{
         event.preventDefault()
         if(event.target.innerText==="Save"){
-            const newRoutine: IRoutine = {...this.state.currentRoutine}
-            newRoutine.Cycles.map((cycle, idx) =>{
-                return {Length:this.editedRoutine[idx].length, Days:this.editedRoutine[idx]}
-            })
-            this.setState({editing: !this.state.editing, currentRoutine: newRoutine, cart: []})
+            const newRoutine = new CRoutine(this.editedRoutine)
+            this.setState({editing: !this.state.editing, currentRoutine:newRoutine, cart: []})
         }else if(event.target.innerText==="Edit"){
             this.setState({editing: !this.state.editing})
         }else if(event.target.innerText==="Cancel"){
-            this.passThroughCycle = new CRoutineCycle(this.state.currentRoutine.Cycles[this.state.currentCycle])
-            this.editedRoutine = JSON.parse(JSON.stringify(this.state.currentRoutine.Cycles))
-            this.setState({editing: !this.state.editing, cart: []})
+            let currentCycle = this.state.currentCycle
+            if(this.state.currentCycle+1>this.state.currentRoutine.Cycles.length){
+                currentCycle = 0
+            }
+            this.passThroughCycle = new CRoutineCycle(this.state.currentRoutine.Cycles[currentCycle])
+            this.editedRoutine = new CRoutine(this.state.currentRoutine)
+            
+            this.setState({editing: !this.state.editing, cart: [], currentCycle: currentCycle})
         }
     }
     
@@ -255,7 +340,7 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
         let cartStyle="row mb-3 ms-3 me-3 mt-0 cart-On-RoutineCustomization slideDown";
         let editingAreaStyle = "row ms-3 text-left fs-4 slideDown"
         const settingsButtonsStyle = "ms-5 cycleButton-Shadow rounded-0 w-25 btn btn-primary"
-        let {editing, cart, currentRoutine, currentCycle} = this.state
+        let {editing, cart, currentCycle} = this.state
         return(
             <div className = "container-fluid p-2">
                 {/* ----EDIT AREA ELEMENT START---- */}
@@ -272,7 +357,11 @@ class RoutineCustomization extends React.Component<any, IRoutineState>{
                 {/* ----EDIT AREA ELEMENT END---- */}
 
                 {/* ----CYCLE TAB ELEMENT START---- */}
-                <ButtonGroup buttonType="cycleNavigationButton" cycleNum={currentRoutine["Number of Cycles"]} currentCycle={currentCycle} onClickHandler={this.cycleCycles}/>
+                <ButtonGroup buttonType="cycleNavigationButton" 
+                cycleNum={this.editedRoutine.Cycles.length+1} 
+                currentCycle={currentCycle} onClickHandler={this.cycleCycles}
+                handleDragging = {this.handleDragging} editing = {this.state.editing}
+                />
                 {/* ----CYCLE TAB ELEMENT END---- */}
 
                 {/* ----ROUTINE VIEW ELEMENT START---- */}

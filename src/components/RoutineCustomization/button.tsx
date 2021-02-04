@@ -21,10 +21,12 @@ const Button: React.FC<IButtonProps> = props =>{
     if(props.buttonText==="START")buttonStyle = "btn btn-light btn-outline-primary rounded-0 button-RoutineCustomization float-end"
     else if(props.buttonText.includes("Day "))buttonStyle = "btn dayButton dayButton-RoutineCustomization rounded-0 w-100 btn-primary"
     else if(props.buttonText.includes("Cycle ")){
-        if(parseInt(props.buttonText.split(' ')[1])-1===props.active){
+        const cycleInd = props.buttonText.split(' ')[1]
+        buttonStyle = "btn cycleButton rounded-0 nts-Btn-blue-hover"
+        if(parseInt(cycleInd)-1===props.active){
             buttonStyle= "btn btn-primary rounded-0 cycleButton-Shadow"
-        }else{
-            buttonStyle = "btn cycleButton rounded-0 nts-Btn-blue-hover"
+        }else if(cycleInd==="+"){
+            isDraggable = false
         }
     }
     return(
@@ -35,8 +37,7 @@ const Button: React.FC<IButtonProps> = props =>{
         onDrop={props.handleDragging} 
         onDragStart={(event)=>props.handleDragging(event, sourceID)} 
         onClick={(event)=>props.onClickFunc(event, sourceID)}>{props.buttonText+' '} 
-        {/* {props.editing && !props.buttonText.includes("Day ") ? ( <FontAwesomeIcon size='2x' icon={farCopy} />):
-        (null)} */}
+
         </button>
     )
 }
