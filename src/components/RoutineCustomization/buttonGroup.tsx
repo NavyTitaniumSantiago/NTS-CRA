@@ -69,7 +69,7 @@ const ButtonGroup: React.FC<IButtonGroupProps> = props =>{
     return(
         <div className = {rowClass}>
             {/* ----DAY# BUTTON START---- */}
-            {(renderDOTW)  ? (<div className="col col-sm-1 p-0"><Button onClickFunc={onClickFunc} handleDragging = {handleDragging} buttonText = {`Day ${props.day}`} editing={props.editing}/></div>)
+            {(renderDOTW)  ? (<div className="col col-sm-1 p-0"><Button sourceID = {props.sourceID} onClickFunc={onClickFunc} handleDragging = {handleDragging} buttonText = {`Day ${props.day}`} editing={props.editing}/></div>)
                 : (null)}
             {/* ----DAY# BUTTON END---- */}
             {/* ----HORIZONTAL LISTS GENERATOR START---- */}
