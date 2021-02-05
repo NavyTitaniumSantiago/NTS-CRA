@@ -1,15 +1,8 @@
 import {LocalDataProcessor} from '../../fetchLocalData'
 import {CincreaseStrategy, CRoutineSet, CRoutineDay, CRoutineCycle, CRoutine} from '../routineClasses'
-import {EmptySet, EmptyDay, EmptyCycle, EmptyRoutine, 
-    ActuallyEmptyDay, ActuallyEmptyCycle, ActuallyEmptyRoutine} from './routineClassesTestData'
+import {EmptySet, EmptyDay, EmptyCycle, EmptyRoutine} from './routineClassesTestData'
 import {incStratDefault, incStratCopy, testDefault, testCustom,
-    testCopy, checkParentFunctionsExist, standaloneRCFreplace, 
-    testReplace, testReplaceEmpty, standaloneRCFinsert,
-    testInsert, standaloneRCFremove, testRemove,
-    standaloneRCFduplicate, testDuplicate,
-    standaloneRCFmove, testMove_Illegal, testMove_Sequential,
-    testMove_GAP_END, testMove_GAP_MIDDLE, testMove_GAP_START, 
-    testMove_GAP_START_END
+    testCopy, checkParentFunctionsExist
 } from './rCtestsHelperFunctions.js'
 
 const TestRoutine = LocalDataProcessor.getRoutineByRoutineName("Ceonxiy")

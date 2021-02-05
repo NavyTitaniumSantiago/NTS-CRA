@@ -198,7 +198,9 @@ export function testInsert(CRoutineType){
     //test start
     itemToInsert = new conversion(testJSON)
     itemToInsert[insertKey] = 42
-    CRoutineInstance.insert(0, itemToInsert)
+    //originally insert only inserted before idx. 
+    //We then added option to insert before or after based on mouse coordinates
+    CRoutineInstance.insert(0, itemToInsert, 1, 0) 
     expect(CRoutineInstance[key].length).toEqual(3)
     expect(CRoutineInstance[key][1][insertKey]).toBeUndefined()
     expect(CRoutineInstance[key][0][insertKey]).toEqual(42)
@@ -206,7 +208,7 @@ export function testInsert(CRoutineType){
     //test end
     itemToInsert = new conversion(testJSON)
     itemToInsert[insertKey] = 44
-    CRoutineInstance.insert(2, itemToInsert)
+    CRoutineInstance.insert(2, itemToInsert, 1, 0)
     expect(CRoutineInstance[key].length).toEqual(4)
     expect(CRoutineInstance[key][3][insertKey]).toEqual(1337)
     expect(CRoutineInstance[key][2][insertKey]).toEqual(44)
@@ -214,7 +216,7 @@ export function testInsert(CRoutineType){
     //test middle
     itemToInsert = new conversion(testJSON)
     itemToInsert[insertKey] = 77
-    CRoutineInstance.insert(2, itemToInsert)
+    CRoutineInstance.insert(2, itemToInsert, 1, 0)
     expect(CRoutineInstance[key].length).toEqual(5)
     expect(CRoutineInstance[key][3][insertKey]).toEqual(44)
     expect(CRoutineInstance[key][2][insertKey]).toEqual(77)
@@ -272,21 +274,21 @@ export function testRemove(testTarget, idx){
     expect(testChoices[1].remove(1)).toEqual(0)
     expect(testChoices[1]).toMatchObject(controlChoices[1])
     //remove from arr.len = 1
-    expect(testChoices[1].remove(0)).toEqual(1)
+    expect(testChoices[1].remove(0)).toBeTruthy()
     expect(testChoices[1][key].length).toEqual(0)
     //remove at start
-    expect(testChoices[2].remove(0)).toEqual(1)
+    expect(testChoices[2].remove(0)).toBeTruthy()
     expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
     expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==0))
     //remove in the middle
     testChoices[2] = new conversion(controlChoices[2])
-    expect(testChoices[2].remove(1)).toEqual(1)
+    expect(testChoices[2].remove(1)).toBeTruthy()
     expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
     expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==1))
     //remove in the end
     testChoices[2] = new conversion(controlChoices[2])
     const lastIdx = testChoices[2][key].length-1
-    expect(testChoices[2].remove(lastIdx)).toEqual(1)
+    expect(testChoices[2].remove(lastIdx)).toBeTruthy()
     expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
     expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==lastIdx))
 }
@@ -345,7 +347,7 @@ export function testDuplicate(testTarget, idx){
 }
 
 
-export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo, beforeOrAfter = "before"){
+export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo, midPoint = 1, mousePos = 0){
     if(Math.max(idxMoved, idxMovedTo)>=arrIn.length || arrIn.length === 1) return 0
     else if(idxMoved===idxMovedTo) return arrIn
     else{
@@ -355,7 +357,7 @@ export function standaloneRCFmove(arrIn, idxMoved, idxMovedTo, beforeOrAfter = "
             arrIn[idxMovedTo] = temp
         }
         else{
-            if(beforeOrAfter === "after") idxMovedTo++
+            if(mousePos>midPoint) idxMovedTo++
             standaloneRCFinsert(arrIn, idxMovedTo, temp)
             if(idxMoved<idxMovedTo){
                 standaloneRCFremove(arrIn, idxMoved)
@@ -393,15 +395,15 @@ export function testMove_Illegal(testTarget){
         controlChoices.forEach(choice=> testChoices.push(new conversion(choice)))
         //ILLEGAL MOVES
         //move on empty array -> shouldnt work
-        expect(testChoices[0].move(1,2)).toEqual(0)
+        expect(testChoices[0].move(1,2,0,1)).toEqual(0)
         //move from arr.len = 1 -> shouldnt work
-        expect(testChoices[1].move(0, 0)).toEqual(0)
+        expect(testChoices[1].move(0, 0,0,1)).toEqual(0)
         //move when idxMove>length -> shouldnt work
-        expect(testChoices[2].move(15,1)).toEqual(0)
+        expect(testChoices[2].move(15,1,0,1)).toEqual(0)
         //move when idxMoveTo>length -> shouldnt work
-        expect(testChoices[2].move(15,1)).toEqual(0)
+        expect(testChoices[2].move(15,1,0,1)).toEqual(0)
         //move when both idx> length
-        expect(testChoices[2].move(15,15)).toEqual(0)
+        expect(testChoices[2].move(15,15,0,1)).toEqual(0)
 }
 
 function testMoveSwitch(testTarget){
@@ -438,17 +440,17 @@ export function testMove_Sequential(testTarget){
     //the mechanism for sequential moves it the same so with standalone testing working properly
     //it feels excessive to test it here as well.
     //move at start
-    expect(testChoice.move(0,1)).toEqual(1)
+    expect(testChoice.move(0,1,0,1)).toEqual(1)
     expect(testChoice[key][0]).toEqual(controlChoice[key][1])
     expect(testChoice[key][1]).toEqual(controlChoice[key][0])
     //move in the end
     testChoice = new conversion(controlChoice)
-    expect(testChoice.move(3,4)).toEqual(1)
+    expect(testChoice.move(3,4,0,1)).toEqual(1)
     expect(testChoice[key][3]).toEqual(controlChoice[key][4])
     expect(testChoice[key][4]).toEqual(controlChoice[key][3])
     //move in the middle
     testChoice = new conversion(controlChoice)
-    expect(testChoice.move(2,3)).toEqual(1)
+    expect(testChoice.move(2,3,0,1)).toEqual(1)
     expect(testChoice[key][2]).toEqual(controlChoice[key][3])
     expect(testChoice[key][3]).toEqual(controlChoice[key][2])
 }
@@ -462,7 +464,7 @@ export function testMove_GAP_START(testTarget){
     let testChoice = new conversion(controlChoice)
     //Before
         //idxMove<idxMovedTo
-        expect(testChoice.move(0,3)).toEqual(1)
+        expect(testChoice.move(0,3, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][1])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][0])
@@ -470,7 +472,7 @@ export function testMove_GAP_START(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][4])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(3,0)).toEqual(1)
+        expect(testChoice.move(3,0, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][3])
         expect(testChoice[key][1]).toEqual(controlChoice[key][0])
         expect(testChoice[key][2]).toEqual(controlChoice[key][1])
@@ -479,7 +481,7 @@ export function testMove_GAP_START(testTarget){
     //After
         //idxMove<idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(0,3, "after")).toEqual(1)
+        expect(testChoice.move(0, 3, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][1])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -487,7 +489,7 @@ export function testMove_GAP_START(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][4])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(3,0, "after")).toEqual(1)
+        expect(testChoice.move(3,0, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][3])
         expect(testChoice[key][2]).toEqual(controlChoice[key][1])
@@ -500,7 +502,7 @@ export function testMove_GAP_END(testTarget){
     let testChoice = new conversion(controlChoice)
     //Before
         //idxMove<idxMovedTo
-        expect(testChoice.move(2,4)).toEqual(1)
+        expect(testChoice.move(2,4, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][1])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -508,7 +510,7 @@ export function testMove_GAP_END(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][4])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(4,2)).toEqual(1)
+        expect(testChoice.move(4,2, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][1])
         expect(testChoice[key][2]).toEqual(controlChoice[key][4])
@@ -517,7 +519,7 @@ export function testMove_GAP_END(testTarget){
     //After
         //idxMove<idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(2,4, "after")).toEqual(1)
+        expect(testChoice.move(2,4, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][1])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -525,7 +527,7 @@ export function testMove_GAP_END(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][2])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(4,2, "after")).toEqual(1)
+        expect(testChoice.move(4,2, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][1])
         expect(testChoice[key][2]).toEqual(controlChoice[key][2])
@@ -538,7 +540,7 @@ export function testMove_GAP_MIDDLE(testTarget){
     let testChoice = new conversion(controlChoice)
     //Before
         //idxMove<idxMovedTo
-        expect(testChoice.move(1,3)).toEqual(1)
+        expect(testChoice.move(1,3, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][1])
@@ -546,7 +548,7 @@ export function testMove_GAP_MIDDLE(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][4])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(3,1)).toEqual(1)
+        expect(testChoice.move(3,1, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][3])
         expect(testChoice[key][2]).toEqual(controlChoice[key][1])
@@ -555,7 +557,7 @@ export function testMove_GAP_MIDDLE(testTarget){
     //After
         //idxMove<idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(1,3, "after")).toEqual(1)
+        expect(testChoice.move(1,3, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -563,7 +565,7 @@ export function testMove_GAP_MIDDLE(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][4])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(3,1, "after")).toEqual(1)
+        expect(testChoice.move(3,1, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][1])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -575,7 +577,7 @@ export function testMove_GAP_START_END(testTarget){
     let testChoice = new conversion(controlChoice)
         //Before
         //idxMove<idxMovedTo
-        expect(testChoice.move(0,4)).toEqual(1)
+        expect(testChoice.move(0,4, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][1])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -583,7 +585,7 @@ export function testMove_GAP_START_END(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][4])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(4,0)).toEqual(1)
+        expect(testChoice.move(4,0, 1, 0)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][4])
         expect(testChoice[key][1]).toEqual(controlChoice[key][0])
         expect(testChoice[key][2]).toEqual(controlChoice[key][1])
@@ -592,7 +594,7 @@ export function testMove_GAP_START_END(testTarget){
     //After
         //idxMove<idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(0,4, "after")).toEqual(1)
+        expect(testChoice.move(0,4, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][1])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
@@ -600,7 +602,7 @@ export function testMove_GAP_START_END(testTarget){
         expect(testChoice[key][4]).toEqual(controlChoice[key][0])
         //idxMove>idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(4,0, "after")).toEqual(1)
+        expect(testChoice.move(4,0, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][0])
         expect(testChoice[key][1]).toEqual(controlChoice[key][4])
         expect(testChoice[key][2]).toEqual(controlChoice[key][1])

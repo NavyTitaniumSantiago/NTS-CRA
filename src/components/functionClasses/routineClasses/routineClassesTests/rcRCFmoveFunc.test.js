@@ -1,12 +1,4 @@
-import {LocalDataProcessor} from '../../fetchLocalData'
-import {CincreaseStrategy, CRoutineSet, CRoutineDay, CRoutineCycle, CRoutine} from '../routineClasses'
-import {EmptySet, EmptyDay, EmptyCycle, EmptyRoutine, 
-    ActuallyEmptyDay, ActuallyEmptyCycle, ActuallyEmptyRoutine} from './routineClassesTestData'
-import {incStratDefault, incStratCopy, testDefault, testCustom,
-    testCopy, checkParentFunctionsExist, standaloneRCFreplace, 
-    testReplace, testReplaceEmpty, standaloneRCFinsert,
-    testInsert, standaloneRCFremove, testRemove,
-    standaloneRCFduplicate, testDuplicate,
+import {
     standaloneRCFmove, testMove_Illegal, testMove_Sequential,
     testMove_GAP_END, testMove_GAP_MIDDLE, testMove_GAP_START, 
     testMove_GAP_START_END
@@ -55,17 +47,17 @@ describe("standaloneRFCmove works logically, decoupled from classes", ()=>{
             arrsInB =  [[1, 2, 3, 4], [1, 2, 3, 4]]
             arrsOutB = [[2, 1, 3, 4], [3, 1, 2, 4]]
             arrsInA =  [[1, 2, 3, 4], [1, 2, 3, 4]]
-            arrsOutA = [[2, 3, 1, 4], [3, 1, 2, 4]]
+            arrsOutA = [[2, 3, 1, 4], [1, 3, 2, 4]]
             //idxMove>idxMovedTo
                 //before
                 expect(standaloneRCFmove(arrsInB[0], 0, 2)).toEqual(arrsOutB[0])
                 //after
-                expect(standaloneRCFmove(arrsInA[0], 0, 2, "after")).toEqual(arrsOutA[0])
+                expect(standaloneRCFmove(arrsInA[0], 0, 2, 0, 1)).toEqual(arrsOutA[0])
             //idxMove<idxMovedTo
                 //before
                 expect(standaloneRCFmove(arrsInB[1], 2, 0)).toEqual(arrsOutB[1])
                 //after
-                expect(standaloneRCFmove(arrsInA[1], 2, 0, "After")).toEqual(arrsOutA[1])
+                expect(standaloneRCFmove(arrsInA[1], 2, 0, 0, 1)).toEqual(arrsOutA[1])
         //move to the end
             arrsInB =  [[1, 2, 3, 4], [1, 2, 3, 4]]
             arrsOutB = [[1, 3, 2, 4], [1, 4, 2, 3]]
@@ -75,12 +67,12 @@ describe("standaloneRFCmove works logically, decoupled from classes", ()=>{
                 //before
                 expect(standaloneRCFmove(arrsInB[0], 1, 3)).toEqual(arrsOutB[0])
                 //after
-                expect(standaloneRCFmove(arrsInA[0], 1, 3, "after")).toEqual(arrsOutA[0])
+                expect(standaloneRCFmove(arrsInA[0], 1, 3, 0, 1)).toEqual(arrsOutA[0])
             //idxMove<idxMovedTo
                 //before
                 expect(standaloneRCFmove(arrsInB[1], 3, 1)).toEqual(arrsOutB[1])
                 //after
-                expect(standaloneRCFmove(arrsInA[1], 3, 1, "after")).toEqual(arrsOutA[1])
+                expect(standaloneRCFmove(arrsInA[1], 3, 1, 0, 1)).toEqual(arrsOutA[1])
         //move in the middle
             arrsInB =  [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
             arrsOutB = [[1, 3, 2, 4, 5], [1, 4, 2, 3, 5]]
@@ -90,12 +82,12 @@ describe("standaloneRFCmove works logically, decoupled from classes", ()=>{
                 //before
                 expect(standaloneRCFmove(arrsInB[0], 1, 3)).toEqual(arrsOutB[0])
                 //after
-                expect(standaloneRCFmove(arrsInA[0], 1, 3, "after")).toEqual(arrsOutA[0])
+                expect(standaloneRCFmove(arrsInA[0], 1, 3, 0, 1)).toEqual(arrsOutA[0])
             //idxMove<idxMovedTo
                 //before
                 expect(standaloneRCFmove(arrsInB[1], 3, 1)).toEqual(arrsOutB[1])
                 //after
-                expect(standaloneRCFmove(arrsInA[1], 3, 1, "after")).toEqual(arrsOutA[1])
+                expect(standaloneRCFmove(arrsInA[1], 3, 1, 0, 1)).toEqual(arrsOutA[1])
         //move start<->end
             arrsInB =  [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]
             arrsOutB = [[2, 3, 4, 1, 5], [5, 1, 2, 3, 4]]
@@ -105,12 +97,12 @@ describe("standaloneRFCmove works logically, decoupled from classes", ()=>{
                 //before
                 expect(standaloneRCFmove(arrsInB[0], 0, 4)).toEqual(arrsOutB[0])
                 //after
-                expect(standaloneRCFmove(arrsInA[0], 0, 4, "after")).toEqual(arrsOutA[0])
+                expect(standaloneRCFmove(arrsInA[0], 0, 4, 0, 1)).toEqual(arrsOutA[0])
             //idxMove<idxMovedTo
                 //before
                 expect(standaloneRCFmove(arrsInB[1], 4, 0)).toEqual(arrsOutB[1])
                 //after
-                expect(standaloneRCFmove(arrsInA[1], 4, 0, "after")).toEqual(arrsOutA[1])
+                expect(standaloneRCFmove(arrsInA[1], 4, 0, 0, 1)).toEqual(arrsOutA[1])
     })
 })
 
