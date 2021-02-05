@@ -63,7 +63,10 @@ class RoutineCommonFunctions{
         return 1
     }
 
-    insert (idx: number, objectIn: CRoutineSet | CRoutineDay | CRoutineCycle){
+    insert (idx: number, objectIn: CRoutineSet | CRoutineDay | CRoutineCycle, midPoint: number = 0, mousePos: number = 1 ){
+        if(mousePos>midPoint){
+            idx++
+        }
         if(idx>=this.iterable.length) this.iterable.push(new this.arrDataTypeCaster(objectIn))
         else{
             this.iterable.splice(idx, 0, new this.arrDataTypeCaster(objectIn))
@@ -88,7 +91,7 @@ class RoutineCommonFunctions{
         }
     }
 
-    move(idxMoved: number, idxMovedTo: number, beforeOrAfter: string): number{
+    move(idxMoved: number, idxMovedTo: number, midPoint:number, mousePos:number): number{
         if(Math.max(idxMoved, idxMovedTo)>=this.iterable.length 
             || this.iterable.length===1 ||
             idxMoved === idxMovedTo) return 0
@@ -99,8 +102,8 @@ class RoutineCommonFunctions{
                 this.iterable[idxMovedTo] = temp
             }
             else{
-                if(beforeOrAfter === "after") idxMovedTo++
-                this.insert(idxMovedTo, temp)
+                if(mousePos>midPoint) idxMovedTo++
+                this.insert(idxMovedTo, temp, midPoint, mousePos)
                 if(idxMoved<idxMovedTo) this.remove(idxMoved)
                 else this.remove(idxMoved+1)
             }
@@ -141,13 +144,18 @@ export class CRoutineDay extends RoutineCommonFunctions{
             this["Is rest day"] = values["Is rest day"]
             this["Sets"] = []
             if(values.Sets){ //If a rest day is instantiated it will have no Sets attached.
-                for(let i = 0; i< values["Sets"].length; i++){
-                    this["Sets"].push(new CRoutineSet(values["Sets"][i])) //the inputs will mostly be JSONs
-                }
+                this.setSets(values.Sets)
             }
         }
-        this.iterable = this.Sets
+        
         //this.length = this.iterable.length
+    }
+    setSets(arrIn){
+        this.Sets = []
+        for(let i = 0; i< arrIn.length; i++){
+            this["Sets"].push(new CRoutineSet(arrIn[i])) //the inputs will mostly be JSONs
+        }
+        this.iterable = this.Sets
     }
 }
 export class CRoutineCycle extends RoutineCommonFunctions{
