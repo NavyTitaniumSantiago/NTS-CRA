@@ -198,7 +198,9 @@ export function testInsert(CRoutineType){
     //test start
     itemToInsert = new conversion(testJSON)
     itemToInsert[insertKey] = 42
-    CRoutineInstance.insert(0, itemToInsert)
+    //originally insert only inserted before idx. 
+    //We then added option to insert before or after based on mouse coordinates
+    CRoutineInstance.insert(0, itemToInsert, 1, 0) 
     expect(CRoutineInstance[key].length).toEqual(3)
     expect(CRoutineInstance[key][1][insertKey]).toBeUndefined()
     expect(CRoutineInstance[key][0][insertKey]).toEqual(42)
@@ -206,7 +208,7 @@ export function testInsert(CRoutineType){
     //test end
     itemToInsert = new conversion(testJSON)
     itemToInsert[insertKey] = 44
-    CRoutineInstance.insert(2, itemToInsert)
+    CRoutineInstance.insert(2, itemToInsert, 1, 0)
     expect(CRoutineInstance[key].length).toEqual(4)
     expect(CRoutineInstance[key][3][insertKey]).toEqual(1337)
     expect(CRoutineInstance[key][2][insertKey]).toEqual(44)
@@ -214,7 +216,7 @@ export function testInsert(CRoutineType){
     //test middle
     itemToInsert = new conversion(testJSON)
     itemToInsert[insertKey] = 77
-    CRoutineInstance.insert(2, itemToInsert)
+    CRoutineInstance.insert(2, itemToInsert, 1, 0)
     expect(CRoutineInstance[key].length).toEqual(5)
     expect(CRoutineInstance[key][3][insertKey]).toEqual(44)
     expect(CRoutineInstance[key][2][insertKey]).toEqual(77)
@@ -272,21 +274,21 @@ export function testRemove(testTarget, idx){
     expect(testChoices[1].remove(1)).toEqual(0)
     expect(testChoices[1]).toMatchObject(controlChoices[1])
     //remove from arr.len = 1
-    expect(testChoices[1].remove(0)).toEqual(1)
+    expect(testChoices[1].remove(0)).toBeTruthy()
     expect(testChoices[1][key].length).toEqual(0)
     //remove at start
-    expect(testChoices[2].remove(0)).toEqual(1)
+    expect(testChoices[2].remove(0)).toBeTruthy()
     expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
     expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==0))
     //remove in the middle
     testChoices[2] = new conversion(controlChoices[2])
-    expect(testChoices[2].remove(1)).toEqual(1)
+    expect(testChoices[2].remove(1)).toBeTruthy()
     expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
     expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==1))
     //remove in the end
     testChoices[2] = new conversion(controlChoices[2])
     const lastIdx = testChoices[2][key].length-1
-    expect(testChoices[2].remove(lastIdx)).toEqual(1)
+    expect(testChoices[2].remove(lastIdx)).toBeTruthy()
     expect(testChoices[2][key].length).toEqual(controlChoices[2][key].length-1)
     expect(testChoices[2][key]).toMatchObject(controlChoices[2][key].filter((item, idx) => idx!==lastIdx))
 }
@@ -479,7 +481,7 @@ export function testMove_GAP_START(testTarget){
     //After
         //idxMove<idxMovedTo
         testChoice = new conversion(controlChoice)
-        expect(testChoice.move(0,3, 0, 1)).toEqual(1)
+        expect(testChoice.move(0, 3, 0, 1)).toEqual(1)
         expect(testChoice[key][0]).toEqual(controlChoice[key][1])
         expect(testChoice[key][1]).toEqual(controlChoice[key][2])
         expect(testChoice[key][2]).toEqual(controlChoice[key][3])
