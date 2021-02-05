@@ -7,7 +7,7 @@ const Navbar: React.FC = props =>{
     return(
         <nav className="navbar navbar-expand-lg navbar-dark navbar-default m-2">
             <div className="container-fluid">
-                <Link to = "/" className = "navbar-brand ps-3 fs-3">Work Out App</Link>
+                <Link to = {{pathname: "/", key: 1}}className = "navbar-brand ps-3 fs-3">Work Out App</Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>
                 </button>
