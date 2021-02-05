@@ -69,14 +69,33 @@ class SelectionFrame extends React.Component<any, IState> {
         if(window.event) this.setState(window.history.state)
     }
     getSnapshotBeforeUpdate(prevProps, prevState){
-        //console.log(12, prevState)
-        if(this.state.currentPage === "RoutineList" && prevState.currentPage !=="RoutineList") window.history.pushState(this.state,"")
+        
+        if(event && (event.target as unknown as HTMLElement).classList && (event.target as unknown as HTMLElement).classList.contains("navbar-brand") && window.history.state.key){
+            console.log(1233, window.history.state)
+            window.history.pushState({reset:true}, "")
+        }
+        else if(this.state.currentPage === "RoutineList" && prevState.currentPage !=="RoutineList") window.history.pushState(this.state,"")
         else window.history.pushState(this.state.oldState,"")
         return null
     }
     componentDidUpdate(event){
-        //console.log(56, window.history)
+        if(window.history.state && window.history.state.reset === true){
+            console.log(window.history.state)
+            window.history.pushState({}, "")
+            console.log(window.history.state)
+            this.setState({
+                currentPage: "WelcomeScreen",
+                choices:[],
+                currentLocation: 'selectionFrame',
+                routines: [],
+                oldState: {
+                    choices:[],
+                    currentPage: ''
+                }
+            
 
+            })
+        }
         window.onpopstate = () =>{
             if(window.history.state && window.history.state.currentPage) this.setState(window.history.state)
         }

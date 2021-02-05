@@ -7,14 +7,14 @@ class Routes extends React.Component<any>{
             <Switch>   
                 <Route path="/signup" component = {Auth}/>
                 <Route path="/login" component = {Auth}/>
-                <Route path="/selection" component = {SelectionFrame}/>
+                <Route path="/selection" component = {SelectionFrame} />
                 <Route path="/custom" component = {CustomEntry}/>
                 <Route path="/exerciselist" component = {ExerciseList}/>
                 <Route path="/exerciseinfo" component = {ExerciseInfo}/>
                 <Route path="/routine" component = {RoutineCustomization}/>
                 <Route path="/live" component = {LiveRoutine}/>
                 <Route path="/profile" component = {Profile}/>
-                <Route path="/" component={SelectionFrame}/>
+                <Route path="/" component = {SelectionFrame}/>
             </Switch>
         )
     }
