@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
-import { faWindowRestore } from '@fortawesome/free-solid-svg-icons'
+
 import React from 'react'
 import {LocalDataProcessor} from '../logicComponents.js'
 import './SelectionFrame.css'
@@ -69,14 +69,33 @@ class SelectionFrame extends React.Component<any, IState> {
         if(window.event) this.setState(window.history.state)
     }
     getSnapshotBeforeUpdate(prevProps, prevState){
-        //console.log(12, prevState)
-        if(this.state.currentPage === "RoutineList" && prevState.currentPage !=="RoutineList") window.history.pushState(this.state,"")
+        
+        if(event && (event.target as unknown as HTMLElement).classList && (event.target as unknown as HTMLElement).classList.contains("navbar-brand") && window.history.state.key){
+            console.log(1233, window.history.state)
+            window.history.pushState({reset:true}, "")
+        }
+        else if(this.state.currentPage === "RoutineList" && prevState.currentPage !=="RoutineList") window.history.pushState(this.state,"")
         else window.history.pushState(this.state.oldState,"")
         return null
     }
     componentDidUpdate(event){
-        //console.log(56, window.history)
+        if(window.history.state && window.history.state.reset === true){
+            console.log(window.history.state)
+            window.history.pushState({}, "")
+            console.log(window.history.state)
+            this.setState({
+                currentPage: "WelcomeScreen",
+                choices:[],
+                currentLocation: 'selectionFrame',
+                routines: [],
+                oldState: {
+                    choices:[],
+                    currentPage: ''
+                }
+            
 
+            })
+        }
         window.onpopstate = () =>{
             if(window.history.state && window.history.state.currentPage) this.setState(window.history.state)
         }
@@ -112,7 +131,7 @@ class SelectionFrame extends React.Component<any, IState> {
                     <div className="card-body">
                         <h5 className="card-title">{dataCurrentPage.title}</h5>
                         <ul>
-                            {dataCurrentPage.menuOptions.map(option => <li key = {option} tabIndex={0} className="btn w-100 mt-2 button-SelectionFrame rounded-0 border-2" onClick = {this.handleClick} onKeyDown = {this.handleClick}>{option}</li>)}    
+                            {dataCurrentPage.menuOptions.map(option => <li key = {option} tabIndex={0} className="btn w-100 mt-2 btn-SelectionFrame nts-Btn-blue-hover rounded-0 border-2" onClick = {this.handleClick} onKeyDown = {this.handleClick}>{option}</li>)}    
                         </ul>
                     </div>
             </div>

@@ -1,6 +1,8 @@
+//interfaces process JSONs which dont have any functions attached to them
+
 export interface IincreaseStrategy{
     increaseBy: number,
-    increaseWhen: number
+    increaseWhen: number,
 }
 export interface IRoutineSet{
     Exercise: string,
@@ -8,24 +10,26 @@ export interface IRoutineSet{
     customWeight: number,
     defaultRepCD: number,
     customRepCD: number,
+    defaultSetCD: number, 
+    customSetCD: number,
     defaultReps: number,
     customReps: number,
     defaultIncreaseStrategy: IincreaseStrategy,
-    customIncreaseStrategy: IincreaseStrategy
+    customIncreaseStrategy: IincreaseStrategy,
 }
 export interface IRoutineDay{
     "Number of Sets": number,
     "Is rest day": boolean,
-    "Sets": Array<IRoutineSet>
+    "Sets": Array<IRoutineSet>,
 }
 export interface IRoutineCycle{
     "Length": number,
-    "Days": Array<IRoutineDay>
+    "Days": Array<IRoutineDay>,
 }
 export interface IRoutine{
     "Difficulty Level": string,
     "Focus": string,
     "Total Length": number,
     "Number of Cycles": number,
-    "Cycles": Array<IRoutineCycle>
+    "Cycles": Array<IRoutineCycle>,
 }
