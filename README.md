@@ -9,10 +9,10 @@ http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
 ## The Stack:
 
 * FrontEnd:
-** React
-** React-Context
-** Typescript
-** Bootstrap
+  * React
+  * React-Context
+  * Typescript
+  * Bootstrap
 
 * Testing:
 **Jest
