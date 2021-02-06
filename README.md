@@ -18,6 +18,15 @@ https://medium.com/navytitaniumsantiago
 * Fully functional navigation
 * Mimics browser history with React State
 
+### Editable Routine:
+
+![Edit by dragging showcase](/ReadMeImages/dragging.gif)
+* Edit routine by dragging any of the elements.
+* The items drag and drop exactly where you intend them to
+
+![Shortcuts showcase](/ReadMeImages/copydelete.gif)
+* Delete or Duplicate any item by using keyboard shortcuts
+
 ## The Stack:
 
 * FrontEnd:
