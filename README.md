@@ -6,6 +6,10 @@ At its very simplest the main goal of project NTS is to provide a website and/or
 
 http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
 
+## Development Blog:
+
+https://medium.com/navytitaniumsantiago
+
 ## Features:
 
 * Navigation:
