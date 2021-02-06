@@ -6,6 +6,13 @@ At its very simplest the main goal of project NTS is to provide a website and/or
 
 http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
 
+## Features:
+
+* Navigation:
+![Image of the navigation in action](/ReadMeImages/navigation.gif)
+  * Fully functional navigation
+  * Mimics browser history with React State
+
 ## The Stack:
 
 * FrontEnd:
