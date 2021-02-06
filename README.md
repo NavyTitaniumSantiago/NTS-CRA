@@ -12,6 +12,8 @@ https://medium.com/navytitaniumsantiago
 
 ## Features:
 
+### Navigation:
+
 ![Image of the navigation in action](/ReadMeImages/navigation.gif)
 * Fully functional navigation
 * Mimics browser history with React State
