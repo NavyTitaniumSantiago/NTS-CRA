@@ -23,7 +23,8 @@ http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
   * AWS Code Pipeline for Production
   * AWS Cognito for identity management
   * AWS Lambda for backend needs
-
+  * AWS S3 for hosting
+  
 * Tools:
   * Python generated apps to generate testing data(located one repository up)
 
