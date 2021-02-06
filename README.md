@@ -25,7 +25,7 @@ http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
  * AWS Lambda for backend needs
 
 * Tools:
-**Python generated apps to generate testing data(located one repository up)
+ ** Python generated apps to generate testing data(located one repository up)
 
 
 
