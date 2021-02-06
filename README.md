@@ -16,16 +16,16 @@ http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
 
 * Testing:
   * Jest
- * Enzyme
- * React-Testing-Library
+  * Enzyme
+  * React-Testing-Library
 
 * Deployment on AWS
- * AWS Code Pipeline for Production
- * AWS Cognito for identity management
- * AWS Lambda for backend needs
+  * AWS Code Pipeline for Production
+  * AWS Cognito for identity management
+  * AWS Lambda for backend needs
 
 * Tools:
- ** Python generated apps to generate testing data(located one repository up)
+  * Python generated apps to generate testing data(located one repository up)
 
 
 
