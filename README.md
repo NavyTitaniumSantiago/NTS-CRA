@@ -15,7 +15,7 @@ http://navy-titanium-santiago.s3-website-us-east-1.amazonaws.com/
   * Bootstrap
 
 * Testing:
- * Jest
+  * Jest
  * Enzyme
  * React-Testing-Library
 
